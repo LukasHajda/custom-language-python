@@ -1,16 +1,25 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from classes.scanner import Scanner
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# class DullRepetitiveClass:
+#     def __init__(self, x ):
+#         self.somemethod = self.mydecorator(self.somemethod)
+#
+#     def mydecorator(self, myfunction):
+#         def call(*args, **kwargs):
+#             print('HELLO')
+#             return myfunction(*args, **kwargs)
+#         return call
+#
+#     def somemethod(self):
+#         print('SOM U')
+#         return 5
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    # test = DullRepetitiveClass(4)
+    # test.somemethod()
+    scanner = Scanner()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    scanner.start_scanner()
+

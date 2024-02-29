@@ -1,0 +1,3 @@
+foo is 69.
+boo is false.
+goo is 67.4.

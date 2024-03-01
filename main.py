@@ -1,25 +1,26 @@
 from classes.scanner import Scanner
 
 
-# class DullRepetitiveClass:
-#     def __init__(self, x ):
-#         self.somemethod = self.mydecorator(self.somemethod)
-#
-#     def mydecorator(self, myfunction):
-#         def call(*args, **kwargs):
-#             print('HELLO')
-#             return myfunction(*args, **kwargs)
-#         return call
-#
-#     def somemethod(self):
-#         print('SOM U')
-#         return 5
 
 
 if __name__ == '__main__':
     # test = DullRepetitiveClass(4)
     # test.somemethod()
+    # scanner = Scanner()
+
     scanner = Scanner()
 
-    scanner.start_scanner()
+    with open('source_code.txt', 'r') as file:
+        source = file.read()
+    file.close()
+
+    scanner.scanner.input(source)
+
+    while True:
+        token = scanner.scanner.token()
+        if not token:
+            break
+        print(f"TOKEN: {token}")
+
+
 

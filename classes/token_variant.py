@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Token(Enum):
+class TokenVariant(Enum):
     T_PROGRAM = 1,
 
     # END OF EXPRESSION
@@ -46,3 +46,5 @@ class Token(Enum):
 
     # INITIALIZATION
     T_EMPTY = 31
+
+    T_COMMENT = 32

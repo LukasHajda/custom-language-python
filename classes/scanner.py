@@ -1,48 +1,56 @@
-from typing import Optional, Callable, Iterator
-from classes.tokens import Token
+# from typing import Optional, Callable, Iterator
+# from classes.token_variant import TokenVariant
+# from classes.token import Token
+from ply.lex import LexToken
 from ply import lex
 
 SOURCE = 'source_code.txt'
+NEWLINE = '\n'
+OPERATORS = ['PLUS', 'MINUS', 'DIVISION', 'MULTIPLICATION',
+             'ASSIGN', 'LESS', 'LESS_EQUAL', 'GREATER',
+             'GREATER_EQUAL', 'EQUAL', 'NOT_EQUAL']
+
+TYPES = ['INTEGER', 'FLOAT', 'boolean', 'NULL', 'EOF']
+RESERVED_WORDS = ['IDENTIFIER', 'FUNCTION', 'NEGATE', 'IF', 'ELSE', 'WHILE']
 
 
 class Scanner:
+    tokens = (*TYPES, *RESERVED_WORDS, *OPERATORS)
+
+    t_PLUS = r'\+'
+    t_MINUS = r'\-'
+    t_DIVISION = r'\/'
+    t_MULTIPLICATION = r'\*'
+    t_LESS = r'\<'
+    t_LESS_EQUAL = r'\<\='
+    t_GREATER = r'\>'
+    t_GREATER_EQUAL = r'\>\='
+    t_EQUAL = r'='
+    t_NOT_EQUAL = r'!='
+
+    t_INTEGER = r'[0-9]+'
+    t_FLOAT = r'([0-9]*\.[0-9]+)'
+    t_NULL = r'null'
+    t_ignore_WHITESPACE = r'[ \t\r\n\s]'
+    t_IDENTIFIER = r'[a-zA-Z_][a-z]+'
+
     def __init__(self):
-        self.source: Optional[str] = None
-        self.current_character: Optional[str] = None
-        self.previous_character: Optional[str] = None
-        self.row: int = 1
-        self.column: int = 0
-        self.tokens: Optional[list] = None
+        self.scanner = lex.lex(module = self)
+        self.__set_text()
 
-        self.__load_source_code()
-        self.__read_character()
+    def t_ASSIGN(self, token) -> LexToken:
+        r"""[iI][sS]"""
+        return token
 
-    def start_scanner(self) -> None:
-        self.tokens = [_ for _ in self.get_token()]
+    def t_boolean(self, token) -> LexToken:
+        r"""(false|true)"""
+        return token
 
-    def get_tokens(self) -> list:
-        return self.tokens
-
-    def get_token(self) -> Iterator:
-        pass
-
-    def __read_character(self):
-        for character in self.source:
-            self.__increase_row_and_column()
-            self.previous_character = self.current_character
-            self.current_character = character
-
-            print(self.current_character)
-
-    def __load_source_code(self) -> None:
+    def __set_text(self) -> None:
         with open(SOURCE, 'r') as file:
-            self.source = file.read()
+            self.scanner.input(file.read())
+        file.close()
 
-    def __increase_row_and_column(self) -> None:
-        if self.current_character == '\n':
-            self.row += 1
-            self.column = 0
-        else:
-            self.column += 1
-
-        print(f"ROW: {self.row}, COLUMN: {self.column}")
+    # TODO: Dokonci EOF,
+    def get_token(self) -> ...:
+        pass

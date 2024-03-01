@@ -1,3 +1,1 @@
-foo is 69.
-boo is false.
-goo is 67.4.
+is + ++++++ hello 434.45 4343 is false true

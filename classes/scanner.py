@@ -1,5 +1,5 @@
 import functools
-from typing import Optional, Callable, Iterator, Any
+from typing import Callable, Any
 from classes.token import Token, TokenVariant
 from ply.lex import LexToken
 from ply import lex
@@ -23,6 +23,7 @@ TOKENS = {
     'else': TokenVariant.T_ELSE, 'while': TokenVariant.T_WHILE,
     'left_p': TokenVariant.T_LEFT_P, 'right_p': TokenVariant.T_RIGHT_P,
     'left_curly_p': TokenVariant.T_LEFT_CURLY_P, 'right_curly_p': TokenVariant.T_RIGHT_CURLY_P,
+    'dot': TokenVariant.T_DOT,
 
     'ignore_whitespace': TokenVariant.T_WHITESPACE, 'ignore_comments': TokenVariant.T_COMMENT,
     'ignore_newline': TokenVariant.T_NEWLINE
@@ -158,6 +159,11 @@ class Scanner:
         return token
 
     @update_position
+    def t_dot(self, token: LexToken) -> LexToken:
+        r"""\."""
+        return token
+
+    @update_position
     def t_integer(self, token: LexToken) -> LexToken:
         r"""[0-9]+"""
         return token
@@ -191,6 +197,9 @@ class Scanner:
         with open(SOURCE, 'r') as file:
             self.scanner.input(file.read())
         file.close()
+
+
+    # TODO: t_error dokoncit.
 
     def get_token(self):
         lex_token = self.scanner.token()

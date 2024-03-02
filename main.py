@@ -1,5 +1,5 @@
 from classes.scanner import Scanner
-
+from classes.token import TokenVariant
 
 
 
@@ -15,12 +15,10 @@ if __name__ == '__main__':
     file.close()
 
     scanner.scanner.input(source)
+    token = scanner.get_token()
 
-    while True:
-        token = scanner.scanner.token()
-        if not token:
-            break
+    while token.token_variant != TokenVariant.T_EOF:
         print(f"TOKEN: {token}")
-
+        token = scanner.get_token()
 
 

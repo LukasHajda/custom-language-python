@@ -1,3 +1,6 @@
+from classes.token import TokenVariant
+from typing import Any
+
 class ASTnode:
     ...
 
@@ -9,32 +12,37 @@ class Program(ASTnode):
 
 
 class AssignmentStatement(ASTnode):
-    def __init__(self, name: str, value: ASTnode):
-        self.name: str = name
-        self.value: ASTnode = value
+    def __init__(self):
+        self.name: str
+        self.value: ASTnode
 
 
 class IfStatement(ASTnode):
-    def __init__(self, condition: ASTnode):
-        self.condition: ASTnode = condition
+    def __init__(self):
+        self.condition: ASTnode
         self.statements: list = []
         self.else_statements: list = []
 
 
 class WhileStatement(ASTnode):
-    def __init__(self, condition: ASTnode):
-        self.condition: ASTnode = condition
+    def __init__(self):
+        self.condition: ASTnode
         self.statements: list = []
 
 
 class BinaryOperation(ASTnode):
-    def __init__(self, left_operand: ASTnode, operator: str, right_operand: ASTnode):
-        self.left_operand: ASTnode = left_operand
-        self.operator: str = operator
-        self.right_operand: ASTnode = right_operand
+    def __init__(self):
+        self.left_operand: ASTnode
+        self.operator: str
+        self.right_operand: ASTnode
 
 
 class UnaryOperation(ASTnode):
-    def __init__(self, operand: ASTnode, operator: str):
-        self.operand: ASTnode = operand
-        self.operator: str = operator
+    def __init__(self):
+        self.operand: ASTnode
+        self.operator: str
+
+class Literal(ASTnode):
+    def __init__(self):
+        self.type: TokenVariant
+        self.value: Any

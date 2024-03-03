@@ -55,10 +55,10 @@ class TokenVariant(Enum):
 
 class Token:
     def __init__(self, token_variant: TokenVariant, value: str = None, row: int = 0, column: int = 0):
-        self.token_variant = token_variant
-        self.value = value
-        self.row = row
-        self.column = column
+        self.token_variant: TokenVariant = token_variant
+        self.value: str = value
+        self.row: int = row
+        self.column: int = column
 
     def __str__(self):
         return f"Token(type: {self.token_variant}, value:{self.value}, row:{self.row}, column:{self.column})"

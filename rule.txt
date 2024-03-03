@@ -1,0 +1,27 @@
+program			:	statements
+
+
+statements		:	( statement )*
+
+
+statement		:	assignment
+				|	if_statement
+				|	while_loop
+
+
+assignment		:	identifief "is" expression
+if_statement	:	"if" "(" condition ")" block ("else" block)?
+while_loop		:	"while" "(" condition ")" block
+
+
+block			: "{" ( statement )+ "}"
+
+
+condition		: expression ("==" | "!=" | ">" | "<" | ">=" | "<=") expression
+expression      : term (("+" | "-") term)*
+term			: factor (("*" | "/" | "%" | "//") factor)*
+factor			: identifier
+				| "-" factor
+				| "+" factor
+				| "(" expression ")"
+				| literal

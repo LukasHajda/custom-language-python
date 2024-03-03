@@ -1,15 +1,11 @@
-from classes.scanner import Scanner
-from classes.token import TokenVariant
-
+from classes.parser import Parser, Scanner, TokenVariant
 
 
 if __name__ == '__main__':
-    # test = DullRepetitiveClass(4)
-    # test.somemethod()
-    # scanner = Scanner()
-
     scanner = Scanner()
     token = scanner.get_token()
+
+    parser = Parser(scanner)
 
     while token.token_variant != TokenVariant.T_EOF:
         print(f"TOKEN: {token}")

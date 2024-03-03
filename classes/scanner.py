@@ -1,14 +1,14 @@
 import functools
 from typing import Callable, Any
 from classes.token import Token, TokenVariant
-from ply.lex import LexToken
+from ply.lex import LexToken, Lexer
 from ply import lex
-from classes.errors import UnexpectedTokenException
+from classes.errors import UnexpectedCharacterException
 
-SOURCE = 'source_code.txt'
-NEWLINE = '\n'
+SOURCE: str = 'source_code.txt'
+NEWLINE: str = '\n'
 
-RESERVED_WORDS = {
+RESERVED_WORDS: dict = {
     'if': TokenVariant.T_IF,
     'while': TokenVariant.T_WHILE,
     'else': TokenVariant.T_ELSE,
@@ -18,7 +18,7 @@ RESERVED_WORDS = {
     'is': TokenVariant.T_ASSIGN
 }
 
-TOKENS = {
+TOKENS: dict = {
     'plus': TokenVariant.T_PLUS, 'minus': TokenVariant.T_MINUS,
     'division': TokenVariant.T_DIVISION, 'multiplication': TokenVariant.T_MULTIPLICATION,
 
@@ -58,16 +58,17 @@ def update_position(function) -> Callable:
 
 
 class Scanner:
-    tokens = (
+    tokens: list = (
         *(list(TOKENS.keys())),
         *(list(set(RESERVED_WORDS.keys())))
     )
 
     def __init__(self):
-        self.scanner = lex.lex(module = self)
-        self.row = 1
-        self.column = 1
-        self.total = 0
+        self.scanner: Lexer = lex.lex(module = self)
+        self.is_beginning: bool = True
+        self.row: int = 1
+        self.column: int = 1
+        self.total: int = 0
         self.__set_text()
 
     @update_position
@@ -177,12 +178,12 @@ class Scanner:
     @update_position
     def t_identifier(self, token: LexToken) -> LexToken:
         r"""[a-zA-Z_][a-z]+"""
-        token.type = token.value if token.value in RESERVED_WORDS else 'identifier'
+        token.type = token.value if token.value in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value[0]
         return token
 
     def t_error(self, token: LexToken) -> None:
         token.lexer.skip(1)
-        raise UnexpectedTokenException(
+        raise UnexpectedCharacterException(
             message = "Unexpected character: '{token}' at line {row} and column {column}".format(
                 token = token.value,
                 row = self.row,
@@ -196,7 +197,10 @@ class Scanner:
         file.close()
 
     def get_token(self) -> Token:
-        lex_token = self.scanner.token()
+        lex_token: Token = self.scanner.token()
+        if self.is_beginning:
+            self.is_beginning = False
+            return Token(TokenVariant.T_PROGRAM)
         return Token(
             token_variant = TOKENS.get(lex_token.type, RESERVED_WORDS.get(lex_token.type)),
             value = lex_token.value,

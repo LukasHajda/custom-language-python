@@ -54,7 +54,7 @@ class TokenVariant(Enum):
 
 
 class Token:
-    def __init__(self, token_variant: TokenVariant, value: str, row: int, column: int):
+    def __init__(self, token_variant: TokenVariant, value: str = None, row: int = 0, column: int = 0):
         self.token_variant = token_variant
         self.value = value
         self.row = row

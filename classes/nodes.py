@@ -1,7 +1,5 @@
 from classes.token import TokenVariant
-from typing import Any
-
-SIZE = 128
+from typing import Any, Optional
 
 
 class ASTnode:
@@ -11,11 +9,7 @@ class ASTnode:
 # TODO: Skus potom pred alokovat pamata na SIZE a urob testy
 class Program(ASTnode):
     def __init__(self):
-        self.statements: list = [None] * SIZE
-        self.position: int = 0
-
-    def add_statement(self, statement: ASTnode) -> None:
-        self.statements[self.position] = statement
+        self.statements: list = []
 
 
 class AssignmentStatement(ASTnode):
@@ -26,7 +20,7 @@ class AssignmentStatement(ASTnode):
 
 class IfStatement(ASTnode):
     def __init__(self):
-        self.condition: ASTnode
+        self.condition: Optional[ASTnode] = None
         self.statements: list = []
         self.else_statements: list = []
 
@@ -38,15 +32,15 @@ class WhileStatement(ASTnode):
 
 
 class BinaryOperation(ASTnode):
-    def __init__(self):
-        self.left_operand: ASTnode
-        self.operator: str
-        self.right_operand: ASTnode
+    def __init__(self, left_operand: ASTnode, right_operand: ASTnode, operator: TokenVariant):
+        self.left_operand: ASTnode = left_operand
+        self.operator: TokenVariant = operator
+        self.right_operand: ASTnode = right_operand
 
 
 class UnaryOperation(ASTnode):
-    def __init__(self, operator: str, operand: ASTnode):
-        self.operator: str = operator
+    def __init__(self, operator: TokenVariant, operand: ASTnode):
+        self.operator: TokenVariant = operator
         self.operand: ASTnode = operand
 
 

@@ -12,6 +12,8 @@ class TokenVariant(Enum):
     T_PLUS = 'plus',
     T_MINUS = 'minus',
     T_DIVISION = 'division',
+    T_MODULO = 'modulo',
+    T_DIV = 'div',
     T_MULTIPLICATION = 'multiplication',
     T_LESS = 'less',
     T_LESS_EQUAL = 'less_equal',

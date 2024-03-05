@@ -47,7 +47,7 @@ class Parser:
 
     def create_unary_operation_node(self) -> ASTnode:
         return UnaryOperation(
-            operator = self.current_token.value,
+            operator = self.current_token.token_variant,
             operand = self.parse_factor()
         )
 
@@ -75,7 +75,7 @@ class Parser:
                 return self.create_unary_operation_node()
             case TokenVariant.T_LEFT_P:
                 self.eat(TokenVariant.T_LEFT_P)
-                node = self.parser_expression()
+                node = self.parse_expression()
                 self.eat(TokenVariant.T_RIGHT_P)
                 return node
             case _:
@@ -83,10 +83,55 @@ class Parser:
                 return node
 
     def parse_term(self) -> ASTnode:
-        return self.parse_factor()
+        node = self.parse_factor()
 
-    def parser_expression(self) -> ASTnode:
-        return self.parse_term()
+        while self.current_token.token_variant in (
+            TokenVariant.T_MULTIPLICATION,
+            TokenVariant.T_DIVISION,
+            TokenVariant.T_DIV,
+            TokenVariant.T_MODULO
+        ):
+            current_token = self.current_token.token_variant
+
+            match current_token:
+                case TokenVariant.T_MULTIPLICATION:
+                    self.eat(TokenVariant.T_MULTIPLICATION)
+                case TokenVariant.T_DIVISION:
+                    self.eat(TokenVariant.T_DIVISION)
+                case TokenVariant.T_DIV:
+                    self.eat(TokenVariant.T_DIV)
+                case TokenVariant.T_MODULO:
+                    self.eat(TokenVariant.T_MODULO)
+
+            node = BinaryOperation(
+                left_operand = node,
+                right_operand = self.parse_factor(),
+                operator = current_token
+            )
+
+        return node
+
+    def parse_expression(self) -> ASTnode:
+        node = self.parse_term()
+
+        while self.current_token.token_variant in (TokenVariant.T_PLUS, TokenVariant.T_MINUS):
+            current_token = self.current_token.token_variant
+            match self.current_token.token_variant:
+                case TokenVariant.T_PLUS:
+                    self.eat(TokenVariant.T_PLUS)
+                case TokenVariant.T_MINUS:
+                    self.eat(TokenVariant.T_MINUS)
+
+            node = BinaryOperation(
+                left_operand = node,
+                right_operand = self.parse_term(),
+                operator = current_token
+            )
+        return node
+
+    def parse_condition(self) -> ASTnode:
+        pass
+
 
     def parse_program(self) -> ASTnode:
         self.eat(TokenVariant.T_PROGRAM)
@@ -100,8 +145,15 @@ class Parser:
         node.name = self.create_variable()
         self.eat(TokenVariant.T_ASSIGN)
 
-        node.value = self.parser_expression()
+        node.value = self.parse_expression()
         return node
+
+    def parse_if(self) -> ASTnode:
+        self.eat(TokenVariant.T_IF)
+        self.eat(TokenVariant.T_LEFT_P)
+        node = IfStatement()
+
+        node.condition = self.parse_condition()
 
     def parse_statements(self) -> ASTnode:
         root = Program()
@@ -112,7 +164,10 @@ class Parser:
             match token.token_variant:
                 case TokenVariant.T_IDENTIFIER:
                     statement = self.parse_assignment()
-                    root.statements.append()
+                    root.statements.append(statement)
+                    self.eat(TokenVariant.T_DOT)
+                case TokenVariant.T_IF:
+                    statement = self.parse_if()
 
         return root
 

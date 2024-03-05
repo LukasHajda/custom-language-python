@@ -21,6 +21,7 @@ RESERVED_WORDS: dict = {
 TOKENS: dict = {
     'plus': TokenVariant.T_PLUS, 'minus': TokenVariant.T_MINUS,
     'division': TokenVariant.T_DIVISION, 'multiplication': TokenVariant.T_MULTIPLICATION,
+    'modulo': TokenVariant.T_MODULO, 'div': TokenVariant.T_DIV,
 
     'less': TokenVariant.T_LESS, 'less_equal': TokenVariant.T_LESS_EQUAL,
     'greater': TokenVariant.T_GREATER, 'greater_equal': TokenVariant.T_GREATER_EQUAL,
@@ -88,6 +89,16 @@ class Scanner:
 
     @update_position
     def t_eof(self, token: LexToken) -> LexToken:
+        return token
+
+    @update_position
+    def t_modulo(self, token: LexToken) -> LexToken:
+        r"""\%"""
+        return token
+
+    @update_position
+    def t_div(self, token: LexToken) -> LexToken:
+        r"""\/\/"""
         return token
 
     @update_position

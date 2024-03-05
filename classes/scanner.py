@@ -208,10 +208,11 @@ class Scanner:
         file.close()
 
     def get_token(self) -> Token:
-        lex_token: Token = self.scanner.token()
         if self.is_beginning:
             self.is_beginning = False
             return Token(TokenVariant.T_PROGRAM)
+
+        lex_token: Token = self.scanner.token()
         return Token(
             token_variant = TOKENS.get(lex_token.type, RESERVED_WORDS.get(lex_token.type)),
             value = lex_token.value,

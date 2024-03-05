@@ -1,0 +1,27 @@
+digraph {
+	Program_1 [label=Program]
+	AssignmentStatement_1 [label=AssignmentStatement]
+	Program_1 -> AssignmentStatement_1
+	AssignmentStatement_2 [label=AssignmentStatement]
+	Program_1 -> AssignmentStatement_2
+	AssignmentStatement_3 [label=AssignmentStatement]
+	Program_1 -> AssignmentStatement_3
+	AssignmentStatement_4 [label=AssignmentStatement]
+	Program_1 -> AssignmentStatement_4
+	Variable_1 [label="Variable name: foo"]
+	AssignmentStatement_1 -> Variable_1
+	Literal_1 [label="Literal value: 65"]
+	AssignmentStatement_1 -> Literal_1
+	Variable_2 [label="Variable name: goof"]
+	AssignmentStatement_2 -> Variable_2
+	Literal_2 [label="Literal value: 56"]
+	AssignmentStatement_2 -> Literal_2
+	Variable_3 [label="Variable name: hhh"]
+	AssignmentStatement_3 -> Variable_3
+	Literal_3 [label="Literal value: 78.4"]
+	AssignmentStatement_3 -> Literal_3
+	Variable_4 [label="Variable name: ggg"]
+	AssignmentStatement_4 -> Variable_4
+	Literal_4 [label="Literal value: False"]
+	AssignmentStatement_4 -> Literal_4
+}

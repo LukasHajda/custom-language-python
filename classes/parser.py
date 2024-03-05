@@ -12,6 +12,7 @@ class Parser:
         self.next_token: Optional[Token] = self.scanner.get_token()
 
     def eat(self, expected_token: TokenVariant) -> None:
+
         self.current_token = self.next_token
 
         if self.current_token.token_variant != expected_token:
@@ -132,7 +133,6 @@ class Parser:
     def parse_condition(self) -> ASTnode:
         pass
 
-
     def parse_program(self) -> ASTnode:
         self.eat(TokenVariant.T_PROGRAM)
         root = self.parse_statements()
@@ -155,6 +155,8 @@ class Parser:
 
         node.condition = self.parse_condition()
 
+        return node
+
     def parse_statements(self) -> ASTnode:
         root = Program()
 
@@ -168,7 +170,13 @@ class Parser:
                     self.eat(TokenVariant.T_DOT)
                 case TokenVariant.T_IF:
                     statement = self.parse_if()
+                    root.statements.append(statement)
+                case _:
+                    break
 
         return root
+
+    def parse(self) -> ASTnode:
+        return self.parse_program()
 
 

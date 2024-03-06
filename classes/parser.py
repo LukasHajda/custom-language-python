@@ -8,71 +8,79 @@ from typing import Optional
 class Parser:
     def __init__(self, scanner: Scanner):
         self.scanner: Scanner = scanner
-        self.current_token: Optional[Token] = None
-        self.next_token: Optional[Token] = self.scanner.get_token()
+        self.current_token: Optional[Token] = self.scanner.next_token()
 
     def eat(self, expected_token: TokenVariant) -> None:
 
-        self.current_token = self.next_token
-
         if self.current_token.token_variant != expected_token:
             raise UnexpectedTokenException(
-                message = "Expected token: '{expected}' but '{given}' was given".format(
+                message = "Parsing Error. Expected token: '{expected}' but '{given}' was given".format(
                     expected = expected_token.value[0],
                     given = self.current_token.token_variant.value[0],
                 )
             )
 
-        self.next_token = self.scanner.get_token()
+        self.current_token = self.scanner.next_token()
 
     def peek(self) -> Token:
-        return self.next_token
+        return self.scanner.peek()
 
     def create_integer_literal_node(self) -> ASTnode:
-        return Literal(
+        node = Literal(
             token_variant = TokenVariant.T_INTEGER,
             value = int(self.current_token.value)
         )
+        self.eat(TokenVariant.T_INTEGER)
+        return node
 
     def create_float_literal_node(self) -> ASTnode:
-        return Literal(
+        node = Literal(
             token_variant = TokenVariant.T_FLOAT,
             value = float(self.current_token.value)
         )
 
+        self.eat(TokenVariant.T_FLOAT)
+        return node
+
     def create_boolean_literal_node(self) -> ASTnode:
-        return Literal(
+        node = Literal(
             token_variant = TokenVariant.T_FLOAT,
             value = 'true' == self.current_token.value
         )
 
+        self.eat(TokenVariant.T_FLOAT)
+        return node
+
     def create_unary_operation_node(self) -> ASTnode:
-        return UnaryOperation(
-            operator = self.current_token.token_variant,
+        operator = self.current_token.token_variant
+        self.eat(self.current_token.token_variant)
+
+        node = UnaryOperation(
+            operator = operator,
             operand = self.parse_factor()
         )
 
+        return node
+
     def create_variable(self) -> ASTnode:
-        return Variable(
+        node = Variable(
             value = self.current_token.value
         )
 
+        self.eat(self.current_token.token_variant)
+        return node
+
     def parse_factor(self) -> ASTnode:
-        match self.next_token.token_variant:
+        match self.current_token.token_variant:
             case TokenVariant.T_INTEGER:
-                self.eat(TokenVariant.T_INTEGER)
                 return self.create_integer_literal_node()
             case TokenVariant.T_FLOAT:
-                self.eat(TokenVariant.T_FLOAT)
                 return self.create_float_literal_node()
             case TokenVariant.T_BOOLEAN:
-                self.eat(TokenVariant.T_BOOLEAN)
                 return self.create_boolean_literal_node()
             case TokenVariant.T_MINUS:
-                self.eat(TokenVariant.T_MINUS)
                 return self.create_unary_operation_node()
             case TokenVariant.T_PLUS:
-                self.eat(TokenVariant.T_PLUS)
                 return self.create_unary_operation_node()
             case TokenVariant.T_LEFT_P:
                 self.eat(TokenVariant.T_LEFT_P)
@@ -115,6 +123,7 @@ class Parser:
     def parse_expression(self) -> ASTnode:
         node = self.parse_term()
 
+        # TODO: mozno by bolo fajn zrusit `match` a dat tam iba self.current_token.token_variant
         while self.current_token.token_variant in (TokenVariant.T_PLUS, TokenVariant.T_MINUS):
             current_token = self.current_token.token_variant
             match self.current_token.token_variant:
@@ -131,7 +140,18 @@ class Parser:
         return node
 
     def parse_condition(self) -> ASTnode:
-        pass
+        node = self.parse_expression()
+
+        while self.current_token.token_variant in (
+            TokenVariant.T_EQUAL,
+            TokenVariant.T_NOT_EQUAL,
+            TokenVariant.T_LESS,
+            TokenVariant.T_LESS_EQUAL,
+            TokenVariant.T_GREATER,
+            TokenVariant.T_GREATER_EQUAL
+        ):
+            current_token = self.current_token.token_variant
+
 
     def parse_program(self) -> ASTnode:
         self.eat(TokenVariant.T_PROGRAM)
@@ -139,10 +159,9 @@ class Parser:
         return root
 
     def parse_assignment(self) -> ASTnode:
-        self.eat(TokenVariant.T_IDENTIFIER)
         node = AssignmentStatement()
-
         node.name = self.create_variable()
+
         self.eat(TokenVariant.T_ASSIGN)
 
         node.value = self.parse_expression()
@@ -161,9 +180,8 @@ class Parser:
         root = Program()
 
         while self.current_token.token_variant != TokenVariant.T_EOF:
-            token = self.peek()
 
-            match token.token_variant:
+            match self.current_token.token_variant:
                 case TokenVariant.T_IDENTIFIER:
                     statement = self.parse_assignment()
                     root.statements.append(statement)

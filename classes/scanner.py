@@ -66,11 +66,12 @@ class Scanner:
 
     def __init__(self):
         self.scanner: Lexer = lex.lex(module = self)
-        self.is_beginning: bool = True
+        self.tokens: list = []
         self.row: int = 1
         self.column: int = 1
         self.total: int = 0
         self.__set_text()
+        self.__set_tokens()
 
     @update_position
     def t_ignore_newline(self, token: LexToken) -> None:
@@ -163,7 +164,7 @@ class Scanner:
 
     @update_position
     def t_equal(self, token: LexToken) -> LexToken:
-        r"""\="""
+        r"""\=\="""
         return token
 
     @update_position
@@ -195,7 +196,7 @@ class Scanner:
     def t_error(self, token: LexToken) -> None:
         token.lexer.skip(1)
         raise UnexpectedCharacterException(
-            message = "Unexpected character: '{token}' at line {row} and column {column}".format(
+            message = "Lexing Error. Unexpected character: '{token}' at line {row} and column {column}".format(
                 token = token.value,
                 row = self.row,
                 column = self.column
@@ -207,15 +208,29 @@ class Scanner:
             self.scanner.input(file.read())
         file.close()
 
-    def get_token(self) -> Token:
-        if self.is_beginning:
-            self.is_beginning = False
-            return Token(TokenVariant.T_PROGRAM)
-
-        lex_token: Token = self.scanner.token()
+    def __create_token(self, lex_token: LexToken) -> Token:
         return Token(
             token_variant = TOKENS.get(lex_token.type, RESERVED_WORDS.get(lex_token.type)),
             value = lex_token.value,
             row = self.row,
             column = self.column
         )
+
+    def __set_tokens(self) -> None:
+        self.tokens.append(Token(TokenVariant.T_PROGRAM))
+
+        lex_token = self.scanner.token()
+        token = self.__create_token(lex_token)
+
+        while token.token_variant != TokenVariant.T_EOF:
+            self.tokens.append(token)
+            lex_token = self.scanner.token()
+            token = self.__create_token(lex_token)
+
+        self.tokens.append(self.__create_token(lex_token))
+
+    def next_token(self) -> Token:
+        return self.tokens.pop(0)
+
+    def peek(self) -> Token:
+        return self.tokens[0]

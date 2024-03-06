@@ -1,4 +1,1 @@
-foo is 65.
-goof is 56.
-hhh is 78.4.
-ggg is false.
+foo is -(4 + -3).

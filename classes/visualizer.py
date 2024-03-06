@@ -34,10 +34,18 @@ class Visualizer(graphviz.Digraph):
             if isinstance(current_node, Variable) or isinstance(current_node, Literal):
                 self.__add_edge(parent, current_node_name)
 
+            if isinstance(current_node, BinaryOperation):
+                self.__add_edge(parent, current_node_name)
+                self.__increase_queues(stack_value = current_node.left_operand, parent_value = current_node_name)
+                self.__increase_queues(stack_value = current_node.right_operand, parent_value = current_node_name)
+
+            if isinstance(current_node, UnaryOperation):
+                self.__add_edge(parent, current_node_name)
+                self.__increase_queues(stack_value = current_node.operand, parent_value = current_node_name)
 
 
     def __generate_node_name(self, node: ASTnode) -> (str, str):
-        # TODO: toto nejako uprav
+        # TODO: toto nejako uprav, class bude mat svoj __str__ alebo daco take
         index = 1
         label_name = type(node).__name__
         extra_info = ''
@@ -45,6 +53,10 @@ class Visualizer(graphviz.Digraph):
             extra_info = f' name: {node.value}'
         if isinstance(node, Literal):
             extra_info = f' value: {node.value}'
+        if isinstance(node, BinaryOperation):
+            extra_info = f' operator: {node.operator.value[0]}'
+        if isinstance(node, UnaryOperation):
+            extra_info = f' operator: {node.operator.value[0]}'
         while 1:
             id_name = f"{label_name}_{index}"
             if id_name not in self.nodes:
@@ -62,5 +74,4 @@ class Visualizer(graphviz.Digraph):
 
     def visualize_tree(self):
         self.__traverse_ast()
-
         self.render('graph', view = True)

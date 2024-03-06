@@ -5,7 +5,7 @@ from typing import Any, Optional
 class ASTnode:
     ...
 
-# TODO: Urobit enum na AST nodes a nemusis pouzit isinstance
+# TODO: Urobit enum na AST nodes a nemusis pouzit isinstance alebo dat TokenVariant ( asi skor nie )
 # TODO: Skus potom pred alokovat pamata na SIZE a urob testy
 class Program(ASTnode):
     def __init__(self):

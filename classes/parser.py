@@ -43,12 +43,13 @@ class Parser:
         return node
 
     def create_boolean_literal_node(self) -> ASTnode:
+        # TODO: Tu musi byt nejaky raise exception.
         node = Literal(
             token_variant = TokenVariant.T_FLOAT,
             value = 'true' == self.current_token.value
         )
 
-        self.eat(TokenVariant.T_FLOAT)
+        self.eat(TokenVariant.T_BOOLEAN)
         return node
 
     def create_unary_operation_node(self) -> ASTnode:
@@ -152,14 +153,39 @@ class Parser:
         ):
             current_token = self.current_token.token_variant
 
+            match self.current_token.token_variant:
+                case TokenVariant.T_EQUAL:
+                    self.eat(TokenVariant.T_EQUAL)
+                case TokenVariant.T_NOT_EQUAL:
+                    self.eat(TokenVariant.T_NOT_EQUAL)
+                case TokenVariant.T_LESS:
+                    self.eat(TokenVariant.T_LESS)
+                case TokenVariant.T_LESS_EQUAL:
+                    self.eat(TokenVariant.T_LESS_EQUAL)
+                case TokenVariant.T_GREATER:
+                    self.eat(TokenVariant.T_GREATER)
+                case TokenVariant.T_GREATER_EQUAL:
+                    self.eat(TokenVariant.T_GREATER_EQUAL)
+
+            node = BinaryOperation(
+                left_operand = node,
+                right_operand = self.parse_term(),
+                operator = current_token
+            )
+
+        return node
+
 
     def parse_program(self) -> ASTnode:
+        root = Program()
+
         self.eat(TokenVariant.T_PROGRAM)
-        root = self.parse_statements()
+        root.statements = self.parse_statements()
         return root
 
     def parse_assignment(self) -> ASTnode:
         node = AssignmentStatement()
+
         node.name = self.create_variable()
 
         self.eat(TokenVariant.T_ASSIGN)
@@ -167,32 +193,68 @@ class Parser:
         node.value = self.parse_expression()
         return node
 
+    def parse_else(self) -> ASTnode:
+        self.eat(TokenVariant.T_ELSE)
+        self.eat(TokenVariant.T_LEFT_CURLY_P)
+
+        node = ElseStatement()
+        node.statements = self.parse_statements()
+        self.eat(TokenVariant.T_RIGHT_CURLY_P)
+        return node
+
     def parse_if(self) -> ASTnode:
-        self.eat(TokenVariant.T_IF)
-        self.eat(TokenVariant.T_LEFT_P)
         node = IfStatement()
 
+        self.eat(TokenVariant.T_IF)
+        self.eat(TokenVariant.T_LEFT_P)
+
         node.condition = self.parse_condition()
+        self.eat(TokenVariant.T_RIGHT_P)
+        self.eat(TokenVariant.T_LEFT_CURLY_P)
+        node.statements = self.parse_statements()
+
+        self.eat(TokenVariant.T_RIGHT_CURLY_P)
+
+        if self.current_token.token_variant == TokenVariant.T_ELSE:
+            node.else_statement = self.parse_else()
+
+        # print("KONEC IF: ", node.statements)
 
         return node
 
-    def parse_statements(self) -> ASTnode:
-        root = Program()
+    def parse_while(self) -> ASTnode:
+        node = WhileStatement()
 
+        self.eat(TokenVariant.T_WHILE)
+        self.eat(TokenVariant.T_LEFT_P)
+
+        node.condition = self.parse_condition()
+        self.eat(TokenVariant.T_RIGHT_P)
+        self.eat(TokenVariant.T_LEFT_CURLY_P)
+
+        node.statements = self.parse_statements()
+
+        return node
+
+    def parse_statements(self) -> list:
+        statements = []
         while self.current_token.token_variant != TokenVariant.T_EOF:
 
             match self.current_token.token_variant:
                 case TokenVariant.T_IDENTIFIER:
                     statement = self.parse_assignment()
-                    root.statements.append(statement)
+                    statements.append(statement)
                     self.eat(TokenVariant.T_DOT)
                 case TokenVariant.T_IF:
                     statement = self.parse_if()
-                    root.statements.append(statement)
+                    statements.append(statement)
+                case TokenVariant.T_WHILE:
+                    statement = self.parse_while()
+                    statements.append(statement)
                 case _:
                     break
 
-        return root
+        return statements
 
     def parse(self) -> ASTnode:
         return self.parse_program()

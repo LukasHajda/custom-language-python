@@ -1,12 +1,10 @@
 import functools
+from collections import deque
 from typing import Callable, Any
 from classes.token import Token, TokenVariant
 from ply.lex import LexToken, Lexer
 from ply import lex
 from classes.errors import UnexpectedCharacterException
-
-SOURCE: str = 'source_code.txt'
-NEWLINE: str = '\n'
 
 RESERVED_WORDS: dict = {
     'if': TokenVariant.T_IF,
@@ -46,10 +44,10 @@ def update_position(function) -> Callable:
 
     @functools.wraps(function)
     def wrapper(self: Any, token: LexToken) -> LexToken:
-        if token.value == NEWLINE:
+        if token.value == '\n':
             self.column = 1
-            self.total = 0
             self.row += 1
+            self.total = 0
         else:
             self.total += len(token.value)
             self.column = self.total - len(token.value) + 1
@@ -60,13 +58,13 @@ def update_position(function) -> Callable:
 
 class Scanner:
     tokens: list = (
-        *(list(TOKENS.keys())),
-        *(list(set(RESERVED_WORDS.keys())))
+        list((RESERVED_WORDS | TOKENS).keys())
     )
 
     def __init__(self):
         self.scanner: Lexer = lex.lex(module = self)
-        self.tokens: list = []
+        self.source: str = 'source_code.txt'
+        self.tokens: deque = deque()
         self.row: int = 1
         self.column: int = 1
         self.total: int = 0
@@ -189,8 +187,8 @@ class Scanner:
 
     @update_position
     def t_identifier(self, token: LexToken) -> LexToken:
-        r"""[a-zA-Z_][a-z]+"""
-        token.type = token.value if token.value in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value[0]
+        r"""[a-zA-Z_][a-zA-Z]+"""
+        token.type = token.value.lower() if token.value.lower() in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value[0]
         return token
 
     def t_error(self, token: LexToken) -> None:
@@ -204,7 +202,7 @@ class Scanner:
         )
 
     def __set_text(self) -> None:
-        with open(SOURCE, 'r') as file:
+        with open(self.source, 'r') as file:
             self.scanner.input(file.read())
         file.close()
 
@@ -230,7 +228,10 @@ class Scanner:
         self.tokens.append(self.__create_token(lex_token))
 
     def next_token(self) -> Token:
-        return self.tokens.pop(0)
+        return self.tokens.popleft()
 
+
+    # TODO: Zatial peek nepotrebujes v Parseri. Ked tak ho potom zrus a uprav __set_tokens lebo zbyt
+    # ocne sa to dava do deque. Takze nepotreujes davat vsetky tokeny do queue ale vracat to postupne.
     def peek(self) -> Token:
         return self.tokens[0]

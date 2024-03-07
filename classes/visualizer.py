@@ -6,8 +6,8 @@ class Visualizer(graphviz.Digraph):
     def __init__(self, root: ASTnode):
         super().__init__()
         self.root: ASTnode = root
-        self.stack = [root]
-        self.parents = [None]
+        self.stack: deque = deque([root])
+        self.parents: deque = deque([None])
         self.nodes = []
 
     def __increase_queues(self, stack_value: Any, parent_value: Any) -> None:
@@ -17,8 +17,8 @@ class Visualizer(graphviz.Digraph):
     def __traverse_ast(self) -> None:
         # TODO: pozri collectiosn: deque
         while self.stack:
-            current_node = self.stack.pop(0)
-            parent = self.parents.pop(0)
+            current_node = self.stack.popleft()
+            parent = self.parents.popleft()
 
             current_node_name = self.__add_node(current_node)
 
@@ -42,6 +42,30 @@ class Visualizer(graphviz.Digraph):
             if isinstance(current_node, UnaryOperation):
                 self.__add_edge(parent, current_node_name)
                 self.__increase_queues(stack_value = current_node.operand, parent_value = current_node_name)
+
+            if isinstance(current_node, IfStatement):
+                self.__add_edge(parent, current_node_name)
+                self.__increase_queues(stack_value = current_node.condition, parent_value = current_node_name)
+
+                for statement in current_node.statements:
+                    self.__increase_queues(stack_value = statement, parent_value = current_node_name)
+
+                if current_node.else_statement:
+                    self.stack.append(current_node.else_statement)
+                    self.parents.append(current_node_name)
+
+            if isinstance(current_node, ElseStatement):
+                self.__add_edge(parent, current_node_name)
+
+                for statement in current_node.statements:
+                    self.__increase_queues(stack_value = statement, parent_value = current_node_name)
+
+            if isinstance(current_node, WhileStatement):
+                self.__add_edge(parent, current_node_name)
+                self.__increase_queues(stack_value = current_node.condition, parent_value = current_node_name)
+
+                for statement in current_node.statements:
+                    self.__increase_queues(stack_value = statement, parent_value = current_node_name)
 
 
     def __generate_node_name(self, node: ASTnode) -> (str, str):

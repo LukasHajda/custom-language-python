@@ -4,14 +4,6 @@ digraph {
 	Program_1 -> AssignmentStatement_1
 	Variable_1 [label="Variable name: foo"]
 	AssignmentStatement_1 -> Variable_1
-	UnaryOperation_1 [label="UnaryOperation operator: minus"]
-	AssignmentStatement_1 -> UnaryOperation_1
-	BinaryOperation_1 [label="BinaryOperation operator: plus"]
-	UnaryOperation_1 -> BinaryOperation_1
-	Literal_1 [label="Literal value: 4"]
-	BinaryOperation_1 -> Literal_1
-	UnaryOperation_2 [label="UnaryOperation operator: minus"]
-	BinaryOperation_1 -> UnaryOperation_2
-	Literal_2 [label="Literal value: 3"]
-	UnaryOperation_2 -> Literal_2
+	Literal_1 [label="Literal value: 5"]
+	AssignmentStatement_1 -> Literal_1
 }

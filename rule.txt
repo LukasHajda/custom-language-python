@@ -9,7 +9,7 @@ statement		:	assignment
 				|	while_loop
 
 
-assignment		:	identifief "is" expression
+assignment		:	identifief "is" expression "."
 if_statement	:	"if" "(" condition ")" block ("else" block)?
 while_loop		:	"while" "(" condition ")" block
 

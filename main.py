@@ -1,4 +1,4 @@
-from classes.parser import Parser, Scanner, TokenVariant, ASTnode
+from classes.parser import Parser, Scanner, TokenVariant, Program
 from classes.visualizer import Visualizer
 
 
@@ -11,7 +11,7 @@ if __name__ == '__main__':
     #     token = scanner.next_token()
 
     parser: Parser = Parser(scanner)
-    root: ASTnode = parser.parse()
+    root: Program = parser.parse()
 
     visualizer = Visualizer(root)
     visualizer.visualize_tree()

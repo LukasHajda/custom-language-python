@@ -45,7 +45,7 @@ class Parser:
     def create_boolean_literal_node(self) -> ASTnode:
         # TODO: Tu musi byt nejaky raise exception.
         node = Literal(
-            token_variant = TokenVariant.T_FLOAT,
+            token_variant = TokenVariant.T_BOOLEAN,
             value = 'true' == self.current_token.value
         )
 
@@ -175,8 +175,7 @@ class Parser:
 
         return node
 
-
-    def parse_program(self) -> ASTnode:
+    def parse_program(self) -> Program:
         root = Program()
 
         self.eat(TokenVariant.T_PROGRAM)
@@ -208,7 +207,8 @@ class Parser:
         self.eat(TokenVariant.T_IF)
         self.eat(TokenVariant.T_LEFT_P)
 
-        node.condition = self.parse_condition()
+        node.condition = Condition()
+        node.condition.value = self.parse_condition()
         self.eat(TokenVariant.T_RIGHT_P)
         self.eat(TokenVariant.T_LEFT_CURLY_P)
         node.statements = self.parse_statements()
@@ -228,11 +228,14 @@ class Parser:
         self.eat(TokenVariant.T_WHILE)
         self.eat(TokenVariant.T_LEFT_P)
 
-        node.condition = self.parse_condition()
+        node.condition = Condition()
+        node.condition.value = self.parse_condition()
         self.eat(TokenVariant.T_RIGHT_P)
         self.eat(TokenVariant.T_LEFT_CURLY_P)
 
         node.statements = self.parse_statements()
+
+        self.eat(TokenVariant.T_RIGHT_CURLY_P)
 
         return node
 
@@ -242,6 +245,7 @@ class Parser:
 
             match self.current_token.token_variant:
                 case TokenVariant.T_IDENTIFIER:
+                    # print(self.current_token)
                     statement = self.parse_assignment()
                     statements.append(statement)
                     self.eat(TokenVariant.T_DOT)
@@ -252,11 +256,12 @@ class Parser:
                     statement = self.parse_while()
                     statements.append(statement)
                 case _:
+                    # print(self.current_token)
                     break
 
         return statements
 
-    def parse(self) -> ASTnode:
+    def parse(self) -> Program:
         return self.parse_program()
 
 

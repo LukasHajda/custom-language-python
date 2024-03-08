@@ -18,7 +18,8 @@ class NodeVariant(Enum):
 
 
 class ASTnode:
-    ...
+    def __str__(self):
+        return self.__class__.__name__
 
 # TODO: Skus potom pred alokovat pamata na SIZE a urob testy
 class Program(ASTnode):

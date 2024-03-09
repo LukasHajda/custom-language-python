@@ -14,18 +14,19 @@ class NodeVariant(Enum):
     N_UNARY_OPERATION = 'unary_operation',
     N_LITERAL = 'literal',
     N_VARIABLE = 'variable',
-    N_CONDITION = 'condition'
+    N_CONDITION = 'condition',
+    N_BLOCK = 'block'
 
 
 class ASTnode:
     def __str__(self):
         return self.__class__.__name__
 
-# TODO: Skus potom pred alokovat pamata na SIZE a urob testy
+
 class Program(ASTnode):
     def __init__(self):
         self.type: NodeVariant = NodeVariant.N_PROGRAM
-        self.statements: deque = deque()
+        self.block: Optional[Block] = None
 
 
 class AssignmentStatement(ASTnode):
@@ -39,21 +40,21 @@ class IfStatement(ASTnode):
     def __init__(self):
         self.type: NodeVariant = NodeVariant.N_IF_STATEMENT
         self.condition: Optional[Condition] = None
-        self.statements: deque = deque()
-        self.else_statement: Optional[ElseStatement] = None
+        self.block: Optional[Block] = None
+        self.else_block: Optional[ElseStatement] = None
 
 
 class ElseStatement(ASTnode):
     def __init__(self):
         self.type: NodeVariant = NodeVariant.N_ELSE_STATEMENT
-        self.statements: deque = deque()
+        self.block: Optional[Block] = None
 
 
 class WhileStatement(ASTnode):
     def __init__(self):
         self.type: NodeVariant = NodeVariant.N_WHILE_STATEMENT
         self.condition: Optional[Condition] = None
-        self.statements: deque = deque()
+        self.block: Optional[Block] = None
 
 
 class BinaryOperation(ASTnode):
@@ -88,3 +89,9 @@ class Condition(ASTnode):
     def __init__(self):
         self.type: NodeVariant = NodeVariant.N_CONDITION
         self.value: Optional[ASTnode] = None
+
+
+class Block(ASTnode):
+    def __init__(self):
+        self.type = NodeVariant.N_BLOCK
+        self.statements: deque = deque()

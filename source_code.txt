@@ -16,5 +16,6 @@ loo is 4.
 if (False) {
     While((8 + 3) > 8) {
         boo is 8.
+        ioo is False.
     }
 }

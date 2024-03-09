@@ -1,17 +1,19 @@
 digraph {
 	Program_1 [label="Program "]
+	Block_1 [label="Block "]
+	Program_1 -> Block_1
 	AssignmentStatement_1 [label="AssignmentStatement "]
-	Program_1 -> AssignmentStatement_1
+	Block_1 -> AssignmentStatement_1
 	AssignmentStatement_2 [label="AssignmentStatement "]
-	Program_1 -> AssignmentStatement_2
+	Block_1 -> AssignmentStatement_2
 	IfStatement_1 [label="IfStatement "]
-	Program_1 -> IfStatement_1
+	Block_1 -> IfStatement_1
 	IfStatement_2 [label="IfStatement "]
-	Program_1 -> IfStatement_2
+	Block_1 -> IfStatement_2
 	AssignmentStatement_3 [label="AssignmentStatement "]
-	Program_1 -> AssignmentStatement_3
+	Block_1 -> AssignmentStatement_3
 	IfStatement_3 [label="IfStatement "]
-	Program_1 -> IfStatement_3
+	Block_1 -> IfStatement_3
 	Variable_1 [label="Variable name: foo"]
 	AssignmentStatement_1 -> Variable_1
 	Literal_1 [label="Literal type: integer | value: 5"]
@@ -22,90 +24,106 @@ digraph {
 	AssignmentStatement_2 -> Literal_2
 	Condition_1 [label="Condition "]
 	IfStatement_1 -> Condition_1
-	AssignmentStatement_4 [label="AssignmentStatement "]
-	IfStatement_1 -> AssignmentStatement_4
+	Block_2 [label="Block "]
+	IfStatement_1 -> Block_2
 	Condition_2 [label="Condition "]
 	IfStatement_2 -> Condition_2
-	WhileStatement_1 [label="WhileStatement "]
-	IfStatement_2 -> WhileStatement_1
+	Block_3 [label="Block "]
+	IfStatement_2 -> Block_3
 	Variable_3 [label="Variable name: loo"]
 	AssignmentStatement_3 -> Variable_3
 	Literal_3 [label="Literal type: integer | value: 4"]
 	AssignmentStatement_3 -> Literal_3
 	Condition_3 [label="Condition "]
 	IfStatement_3 -> Condition_3
-	WhileStatement_2 [label="WhileStatement "]
-	IfStatement_3 -> WhileStatement_2
+	Block_4 [label="Block "]
+	IfStatement_3 -> Block_4
 	BinaryOperation_1 [label="BinaryOperation operator: greater"]
 	Condition_1 -> BinaryOperation_1
-	Variable_4 [label="Variable name: goo"]
-	AssignmentStatement_4 -> Variable_4
+	AssignmentStatement_4 [label="AssignmentStatement "]
+	Block_2 -> AssignmentStatement_4
 	Literal_4 [label="Literal type: boolean | value: False"]
-	AssignmentStatement_4 -> Literal_4
+	Condition_2 -> Literal_4
+	WhileStatement_1 [label="WhileStatement "]
+	Block_3 -> WhileStatement_1
 	Literal_5 [label="Literal type: boolean | value: False"]
-	Condition_2 -> Literal_5
-	Condition_4 [label="Condition "]
-	WhileStatement_1 -> Condition_4
-	AssignmentStatement_5 [label="AssignmentStatement "]
-	WhileStatement_1 -> AssignmentStatement_5
-	Literal_6 [label="Literal type: boolean | value: False"]
-	Condition_3 -> Literal_6
-	Condition_5 [label="Condition "]
-	WhileStatement_2 -> Condition_5
-	AssignmentStatement_6 [label="AssignmentStatement "]
-	WhileStatement_2 -> AssignmentStatement_6
+	Condition_3 -> Literal_5
+	WhileStatement_2 [label="WhileStatement "]
+	Block_4 -> WhileStatement_2
 	BinaryOperation_2 [label="BinaryOperation operator: plus"]
 	BinaryOperation_1 -> BinaryOperation_2
-	Literal_7 [label="Literal type: integer | value: 7"]
-	BinaryOperation_1 -> Literal_7
-	BinaryOperation_3 [label="BinaryOperation operator: greater"]
-	Condition_4 -> BinaryOperation_3
+	Literal_6 [label="Literal type: integer | value: 7"]
+	BinaryOperation_1 -> Literal_6
+	Variable_4 [label="Variable name: goo"]
+	AssignmentStatement_4 -> Variable_4
+	Literal_7 [label="Literal type: boolean | value: False"]
+	AssignmentStatement_4 -> Literal_7
+	Condition_4 [label="Condition "]
+	WhileStatement_1 -> Condition_4
+	Block_5 [label="Block "]
+	WhileStatement_1 -> Block_5
+	Condition_5 [label="Condition "]
+	WhileStatement_2 -> Condition_5
+	Block_6 [label="Block "]
+	WhileStatement_2 -> Block_6
+	BinaryOperation_3 [label="BinaryOperation operator: plus"]
+	BinaryOperation_2 -> BinaryOperation_3
+	BinaryOperation_4 [label="BinaryOperation operator: plus"]
+	BinaryOperation_2 -> BinaryOperation_4
+	BinaryOperation_5 [label="BinaryOperation operator: greater"]
+	Condition_4 -> BinaryOperation_5
+	AssignmentStatement_5 [label="AssignmentStatement "]
+	Block_5 -> AssignmentStatement_5
+	BinaryOperation_6 [label="BinaryOperation operator: greater"]
+	Condition_5 -> BinaryOperation_6
+	AssignmentStatement_6 [label="AssignmentStatement "]
+	Block_6 -> AssignmentStatement_6
+	AssignmentStatement_7 [label="AssignmentStatement "]
+	Block_6 -> AssignmentStatement_7
+	Literal_8 [label="Literal type: integer | value: 10"]
+	BinaryOperation_3 -> Literal_8
+	Literal_9 [label="Literal type: integer | value: 4"]
+	BinaryOperation_3 -> Literal_9
+	BinaryOperation_7 [label="BinaryOperation operator: plus"]
+	BinaryOperation_4 -> BinaryOperation_7
+	UnaryOperation_1 [label="UnaryOperation operator: minus"]
+	BinaryOperation_4 -> UnaryOperation_1
+	BinaryOperation_8 [label="BinaryOperation operator: plus"]
+	BinaryOperation_5 -> BinaryOperation_8
+	Literal_10 [label="Literal type: integer | value: 8"]
+	BinaryOperation_5 -> Literal_10
 	Variable_5 [label="Variable name: boo"]
 	AssignmentStatement_5 -> Variable_5
-	Literal_8 [label="Literal type: integer | value: 8"]
-	AssignmentStatement_5 -> Literal_8
-	BinaryOperation_4 [label="BinaryOperation operator: greater"]
-	Condition_5 -> BinaryOperation_4
-	Variable_6 [label="Variable name: boo"]
-	AssignmentStatement_6 -> Variable_6
-	Literal_9 [label="Literal type: integer | value: 8"]
-	AssignmentStatement_6 -> Literal_9
-	BinaryOperation_5 [label="BinaryOperation operator: plus"]
-	BinaryOperation_2 -> BinaryOperation_5
-	BinaryOperation_6 [label="BinaryOperation operator: plus"]
-	BinaryOperation_2 -> BinaryOperation_6
-	BinaryOperation_7 [label="BinaryOperation operator: plus"]
-	BinaryOperation_3 -> BinaryOperation_7
-	Literal_10 [label="Literal type: integer | value: 8"]
-	BinaryOperation_3 -> Literal_10
-	BinaryOperation_8 [label="BinaryOperation operator: plus"]
-	BinaryOperation_4 -> BinaryOperation_8
 	Literal_11 [label="Literal type: integer | value: 8"]
-	BinaryOperation_4 -> Literal_11
-	Literal_12 [label="Literal type: integer | value: 10"]
-	BinaryOperation_5 -> Literal_12
-	Literal_13 [label="Literal type: integer | value: 4"]
-	BinaryOperation_5 -> Literal_13
+	AssignmentStatement_5 -> Literal_11
 	BinaryOperation_9 [label="BinaryOperation operator: plus"]
 	BinaryOperation_6 -> BinaryOperation_9
-	UnaryOperation_1 [label="UnaryOperation operator: minus"]
-	BinaryOperation_6 -> UnaryOperation_1
-	Literal_14 [label="Literal type: integer | value: 8"]
-	BinaryOperation_7 -> Literal_14
-	Literal_15 [label="Literal type: integer | value: 3"]
+	Literal_12 [label="Literal type: integer | value: 8"]
+	BinaryOperation_6 -> Literal_12
+	Variable_6 [label="Variable name: boo"]
+	AssignmentStatement_6 -> Variable_6
+	Literal_13 [label="Literal type: integer | value: 8"]
+	AssignmentStatement_6 -> Literal_13
+	Variable_7 [label="Variable name: ioo"]
+	AssignmentStatement_7 -> Variable_7
+	Literal_14 [label="Literal type: boolean | value: False"]
+	AssignmentStatement_7 -> Literal_14
+	Literal_15 [label="Literal type: integer | value: 10"]
 	BinaryOperation_7 -> Literal_15
-	Literal_16 [label="Literal type: integer | value: 8"]
-	BinaryOperation_8 -> Literal_16
-	Literal_17 [label="Literal type: integer | value: 3"]
-	BinaryOperation_8 -> Literal_17
-	Literal_18 [label="Literal type: integer | value: 10"]
-	BinaryOperation_9 -> Literal_18
-	Literal_19 [label="Literal type: integer | value: 3"]
-	BinaryOperation_9 -> Literal_19
+	Literal_16 [label="Literal type: integer | value: 3"]
+	BinaryOperation_7 -> Literal_16
 	BinaryOperation_10 [label="BinaryOperation operator: plus"]
 	UnaryOperation_1 -> BinaryOperation_10
-	Literal_20 [label="Literal type: integer | value: 20"]
-	BinaryOperation_10 -> Literal_20
-	Literal_21 [label="Literal type: integer | value: 3"]
+	Literal_17 [label="Literal type: integer | value: 8"]
+	BinaryOperation_8 -> Literal_17
+	Literal_18 [label="Literal type: integer | value: 3"]
+	BinaryOperation_8 -> Literal_18
+	Literal_19 [label="Literal type: integer | value: 8"]
+	BinaryOperation_9 -> Literal_19
+	Literal_20 [label="Literal type: integer | value: 3"]
+	BinaryOperation_9 -> Literal_20
+	Literal_21 [label="Literal type: integer | value: 20"]
 	BinaryOperation_10 -> Literal_21
+	Literal_22 [label="Literal type: integer | value: 3"]
+	BinaryOperation_10 -> Literal_22
 }

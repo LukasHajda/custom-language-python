@@ -207,9 +207,10 @@ class Scanner:
         file.close()
 
     def __create_token(self, lex_token: LexToken) -> Token:
+        token_variant = TOKENS.get(lex_token.type, RESERVED_WORDS.get(lex_token.type))
         return Token(
-            token_variant = TOKENS.get(lex_token.type, RESERVED_WORDS.get(lex_token.type)),
-            value = lex_token.value,
+            token_variant = token_variant,
+            value = lex_token.value.lower() if token_variant == TokenVariant.T_BOOLEAN else lex_token.value,
             row = self.row,
             column = self.column
         )

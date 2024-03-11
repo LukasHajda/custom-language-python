@@ -43,7 +43,6 @@ class Parser:
         return node
 
     def __create_boolean_literal_node(self) -> ASTnode:
-        # TODO: Tu musi byt nejaky raise exception.
         node = Literal(
             token_variant = TokenVariant.T_BOOLEAN,
             value = 'true' == self.current_token.value
@@ -103,15 +102,7 @@ class Parser:
         ):
             current_token = self.current_token.token_variant
 
-            match current_token:
-                case TokenVariant.T_MULTIPLICATION:
-                    self.__eat(TokenVariant.T_MULTIPLICATION)
-                case TokenVariant.T_DIVISION:
-                    self.__eat(TokenVariant.T_DIVISION)
-                case TokenVariant.T_DIV:
-                    self.__eat(TokenVariant.T_DIV)
-                case TokenVariant.T_MODULO:
-                    self.__eat(TokenVariant.T_MODULO)
+            self.__eat(current_token)
 
             node = BinaryOperation(
                 left_operand = node,
@@ -124,14 +115,10 @@ class Parser:
     def __parse_expression(self) -> ASTnode:
         node = self.__parse_term()
 
-        # TODO: mozno by bolo fajn zrusit `match` a dat tam iba self.current_token.token_variant
         while self.current_token.token_variant in (TokenVariant.T_PLUS, TokenVariant.T_MINUS):
             current_token = self.current_token.token_variant
-            match self.current_token.token_variant:
-                case TokenVariant.T_PLUS:
-                    self.__eat(TokenVariant.T_PLUS)
-                case TokenVariant.T_MINUS:
-                    self.__eat(TokenVariant.T_MINUS)
+
+            self.__eat(current_token)
 
             node = BinaryOperation(
                 left_operand = node,
@@ -153,19 +140,7 @@ class Parser:
         ):
             current_token = self.current_token.token_variant
 
-            match self.current_token.token_variant:
-                case TokenVariant.T_EQUAL:
-                    self.__eat(TokenVariant.T_EQUAL)
-                case TokenVariant.T_NOT_EQUAL:
-                    self.__eat(TokenVariant.T_NOT_EQUAL)
-                case TokenVariant.T_LESS:
-                    self.__eat(TokenVariant.T_LESS)
-                case TokenVariant.T_LESS_EQUAL:
-                    self.__eat(TokenVariant.T_LESS_EQUAL)
-                case TokenVariant.T_GREATER:
-                    self.__eat(TokenVariant.T_GREATER)
-                case TokenVariant.T_GREATER_EQUAL:
-                    self.__eat(TokenVariant.T_GREATER_EQUAL)
+            self.__eat(current_token)
 
             node = BinaryOperation(
                 left_operand = node,
@@ -197,7 +172,7 @@ class Parser:
         self.__eat(TokenVariant.T_LEFT_CURLY_P)
 
         node = ElseStatement()
-        node.block = self.__parse_statements()
+        node.block = self.__parse_statements(until_curly_p = True)
         self.__eat(TokenVariant.T_RIGHT_CURLY_P)
         return node
 
@@ -211,7 +186,7 @@ class Parser:
         node.condition.value = self.__parse_condition()
         self.__eat(TokenVariant.T_RIGHT_P)
         self.__eat(TokenVariant.T_LEFT_CURLY_P)
-        node.block = self.__parse_statements()
+        node.block = self.__parse_statements(until_curly_p = True)
 
         self.__eat(TokenVariant.T_RIGHT_CURLY_P)
 
@@ -231,15 +206,20 @@ class Parser:
         self.__eat(TokenVariant.T_RIGHT_P)
         self.__eat(TokenVariant.T_LEFT_CURLY_P)
 
-        node.block = self.__parse_statements()
+        node.block = self.__parse_statements(until_curly_p = True)
 
         self.__eat(TokenVariant.T_RIGHT_CURLY_P)
 
         return node
 
-    def __parse_statements(self) -> ASTnode:
+
+    # TODO: Mozno skusit potom urobit samostatny block.
+    def __parse_statements(self, until_curly_p: bool = False) -> ASTnode:
         block = Block()
-        while self.current_token.token_variant != TokenVariant.T_EOF:
+        while self.current_token.token_variant not in (
+                TokenVariant.T_EOF,
+                TokenVariant.T_RIGHT_CURLY_P if until_curly_p else ...
+        ):
 
             match self.current_token.token_variant:
                 case TokenVariant.T_IDENTIFIER:
@@ -253,8 +233,9 @@ class Parser:
                     statement = self.__parse_while()
                     block.statements.append(statement)
                 case _:
-                    # print(self.current_token)
-                    break
+                    raise UnexpectedTokenException(
+                        message = f"Unexpected Token: {self.current_token}"
+                    )
 
         return block
 

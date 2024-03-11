@@ -1,0 +1,19 @@
+digraph {
+	Program_1 [label="Program "]
+	Block_1 [label="Block "]
+	Program_1 -> Block_1
+	AssignmentStatement_1 [label="AssignmentStatement "]
+	Block_1 -> AssignmentStatement_1
+	Variable_1 [label="Variable name: goo"]
+	AssignmentStatement_1 -> Variable_1
+	BinaryOperation_1 [label="BinaryOperation operator: modulo"]
+	AssignmentStatement_1 -> BinaryOperation_1
+	Literal_1 [label="Literal type: integer | value: 5"]
+	BinaryOperation_1 -> Literal_1
+	BinaryOperation_2 [label="BinaryOperation operator: division"]
+	BinaryOperation_1 -> BinaryOperation_2
+	Literal_2 [label="Literal type: integer | value: 6"]
+	BinaryOperation_2 -> Literal_2
+	Literal_3 [label="Literal type: integer | value: 3"]
+	BinaryOperation_2 -> Literal_3
+}

@@ -1,14 +1,12 @@
 import functools
+from collections import deque
 from typing import Callable, Any
 from classes.token import Token, TokenVariant
-from ply.lex import LexToken
+from ply.lex import LexToken, Lexer
 from ply import lex
-from classes.errors import UnexpectedTokenException
+from classes.errors import UnexpectedCharacterException
 
-SOURCE = 'source_code.txt'
-NEWLINE = '\n'
-
-RESERVED_WORDS = {
+RESERVED_WORDS: dict = {
     'if': TokenVariant.T_IF,
     'while': TokenVariant.T_WHILE,
     'else': TokenVariant.T_ELSE,
@@ -18,9 +16,10 @@ RESERVED_WORDS = {
     'is': TokenVariant.T_ASSIGN
 }
 
-TOKENS = {
+TOKENS: dict = {
     'plus': TokenVariant.T_PLUS, 'minus': TokenVariant.T_MINUS,
     'division': TokenVariant.T_DIVISION, 'multiplication': TokenVariant.T_MULTIPLICATION,
+    'modulo': TokenVariant.T_MODULO, 'div': TokenVariant.T_DIV,
 
     'less': TokenVariant.T_LESS, 'less_equal': TokenVariant.T_LESS_EQUAL,
     'greater': TokenVariant.T_GREATER, 'greater_equal': TokenVariant.T_GREATER_EQUAL,
@@ -45,10 +44,10 @@ def update_position(function) -> Callable:
 
     @functools.wraps(function)
     def wrapper(self: Any, token: LexToken) -> LexToken:
-        if token.value == NEWLINE:
+        if token.value == '\n':
             self.column = 1
-            self.total = 0
             self.row += 1
+            self.total = 0
         else:
             self.total += len(token.value)
             self.column = self.total - len(token.value) + 1
@@ -58,17 +57,19 @@ def update_position(function) -> Callable:
 
 
 class Scanner:
-    tokens = (
-        *(list(TOKENS.keys())),
-        *(list(set(RESERVED_WORDS.keys())))
+    tokens: list = (
+        list((RESERVED_WORDS | TOKENS).keys())
     )
 
     def __init__(self):
-        self.scanner = lex.lex(module = self)
-        self.row = 1
-        self.column = 1
-        self.total = 0
+        self.scanner: Lexer = lex.lex(module = self)
+        self.source: str = 'source_code.txt'
+        self.tokens: deque = deque()
+        self.row: int = 1
+        self.column: int = 1
+        self.total: int = 0
         self.__set_text()
+        self.__set_tokens()
 
     @update_position
     def t_ignore_newline(self, token: LexToken) -> None:
@@ -87,6 +88,16 @@ class Scanner:
 
     @update_position
     def t_eof(self, token: LexToken) -> LexToken:
+        return token
+
+    @update_position
+    def t_modulo(self, token: LexToken) -> LexToken:
+        r"""\%"""
+        return token
+
+    @update_position
+    def t_div(self, token: LexToken) -> LexToken:
+        r"""\/\/"""
         return token
 
     @update_position
@@ -151,7 +162,7 @@ class Scanner:
 
     @update_position
     def t_equal(self, token: LexToken) -> LexToken:
-        r"""\="""
+        r"""\=\="""
         return token
 
     @update_position
@@ -176,14 +187,14 @@ class Scanner:
 
     @update_position
     def t_identifier(self, token: LexToken) -> LexToken:
-        r"""[a-zA-Z_][a-z]+"""
-        token.type = token.value if token.value in RESERVED_WORDS else 'identifier'
+        r"""[a-zA-Z_][a-zA-Z]+"""
+        token.type = token.value.lower() if token.value.lower() in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value[0]
         return token
 
     def t_error(self, token: LexToken) -> None:
         token.lexer.skip(1)
-        raise UnexpectedTokenException(
-            message = "Unexpected character: '{token}' at line {row} and column {column}".format(
+        raise UnexpectedCharacterException(
+            message = "Lexing Error. Unexpected character: '{token}' at line {row} and column {column}".format(
                 token = token.value,
                 row = self.row,
                 column = self.column
@@ -191,15 +202,37 @@ class Scanner:
         )
 
     def __set_text(self) -> None:
-        with open(SOURCE, 'r') as file:
+        with open(self.source, 'r') as file:
             self.scanner.input(file.read())
         file.close()
 
-    def get_token(self) -> Token:
-        lex_token = self.scanner.token()
+    def __create_token(self, lex_token: LexToken) -> Token:
+        token_variant = TOKENS.get(lex_token.type, RESERVED_WORDS.get(lex_token.type))
         return Token(
-            token_variant = TOKENS.get(lex_token.type, RESERVED_WORDS.get(lex_token.type)),
-            value = lex_token.value,
+            token_variant = token_variant,
+            value = lex_token.value.lower() if token_variant == TokenVariant.T_BOOLEAN else lex_token.value,
             row = self.row,
             column = self.column
         )
+
+    def __set_tokens(self) -> None:
+        self.tokens.append(Token(TokenVariant.T_PROGRAM))
+
+        lex_token = self.scanner.token()
+        token = self.__create_token(lex_token)
+
+        while token.token_variant != TokenVariant.T_EOF:
+            self.tokens.append(token)
+            lex_token = self.scanner.token()
+            token = self.__create_token(lex_token)
+
+        self.tokens.append(self.__create_token(lex_token))
+
+    def next_token(self) -> Token:
+        return self.tokens.popleft()
+
+
+    # TODO: Zatial peek nepotrebujes v Parseri. Ked tak ho potom zrus a uprav __set_tokens lebo zbyt
+    # ocne sa to dava do deque. Takze nepotreujes davat vsetky tokeny do queue ale vracat to postupne.
+    def peek(self) -> Token:
+        return self.tokens[0]

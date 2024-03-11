@@ -1,8 +1,1 @@
-if ( { else false fdfdf . . . + + +
-+
-
-+
-+
-hello is 45.45.
-
-{787877887878}
+goo is 5 % (6 / 3).

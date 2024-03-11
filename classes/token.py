@@ -12,6 +12,8 @@ class TokenVariant(Enum):
     T_PLUS = 'plus',
     T_MINUS = 'minus',
     T_DIVISION = 'division',
+    T_MODULO = 'modulo',
+    T_DIV = 'div',
     T_MULTIPLICATION = 'multiplication',
     T_LESS = 'less',
     T_LESS_EQUAL = 'less_equal',
@@ -54,11 +56,11 @@ class TokenVariant(Enum):
 
 
 class Token:
-    def __init__(self, token_variant: TokenVariant, value: str, row: int, column: int):
-        self.token_variant = token_variant
-        self.value = value
-        self.row = row
-        self.column = column
+    def __init__(self, token_variant: TokenVariant, value: str = None, row: int = 0, column: int = 0):
+        self.token_variant: TokenVariant = token_variant
+        self.value: str = value
+        self.row: int = row
+        self.column: int = column
 
     def __str__(self):
         return f"Token(type: {self.token_variant}, value:{self.value}, row:{self.row}, column:{self.column})"

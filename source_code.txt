@@ -1,10 +1,8 @@
-goo is 9.
-
-too is False.
-
-boo is 45.67.
+lubo is 10.
 
 
-if (False) {
-    joo is 5.
+if ( True ) {
+    hoo is 20.
 }
+
+lubo is hoo.

@@ -1,5 +1,4 @@
 import functools
-from collections import deque
 from typing import Callable, Any
 from classes.token import Token, TokenVariant
 from ply.lex import LexToken, Lexer
@@ -40,7 +39,7 @@ TOKENS: dict = {
 }
 
 
-def update_position(function) -> Callable:
+def update_position(function: Callable) -> Callable:
 
     @functools.wraps(function)
     def wrapper(self: Any, token: LexToken) -> LexToken:
@@ -64,12 +63,11 @@ class Scanner:
     def __init__(self):
         self.scanner: Lexer = lex.lex(module = self)
         self.source: str = 'source_code.txt'
-        self.tokens: deque = deque()
         self.row: int = 1
         self.column: int = 1
         self.total: int = 0
+        self.is_beginning: bool = True
         self.__set_text()
-        self.__set_tokens()
 
     @update_position
     def t_ignore_newline(self, token: LexToken) -> None:
@@ -82,7 +80,7 @@ class Scanner:
         pass
 
     @update_position
-    def t_ignore_comments(self, token: LexToken) -> LexToken:
+    def t_ignore_comments(self, token: LexToken) -> None:
         r"""\#.*"""
         pass
 
@@ -188,7 +186,7 @@ class Scanner:
     @update_position
     def t_identifier(self, token: LexToken) -> LexToken:
         r"""[a-zA-Z_][a-zA-Z]+"""
-        token.type = token.value.lower() if token.value.lower() in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value[0]
+        token.type = token.value.lower() if token.value.lower() in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value
         return token
 
     def t_error(self, token: LexToken) -> None:
@@ -215,24 +213,10 @@ class Scanner:
             column = self.column
         )
 
-    def __set_tokens(self) -> None:
-        self.tokens.append(Token(TokenVariant.T_PROGRAM))
-
-        lex_token = self.scanner.token()
-        token = self.__create_token(lex_token)
-
-        while token.token_variant != TokenVariant.T_EOF:
-            self.tokens.append(token)
-            lex_token = self.scanner.token()
-            token = self.__create_token(lex_token)
-
-        self.tokens.append(self.__create_token(lex_token))
-
     def next_token(self) -> Token:
-        return self.tokens.popleft()
-
-
-    # TODO: Zatial peek nepotrebujes v Parseri. Ked tak ho potom zrus a uprav __set_tokens lebo zbyt
-    # ocne sa to dava do deque. Takze nepotreujes davat vsetky tokeny do queue ale vracat to postupne.
-    def peek(self) -> Token:
-        return self.tokens[0]
+        if self.is_beginning:
+            self.is_beginning = False
+            return Token(TokenVariant.T_PROGRAM)
+        else:
+            lex_token = self.scanner.token()
+            return self.__create_token(lex_token)

@@ -1,4 +1,4 @@
-from classes.scanner import Scanner, TokenVariant
+from classes.scanner import Scanner
 from classes.token import Token
 from classes.errors import UnexpectedTokenException
 from classes.nodes import *
@@ -11,19 +11,15 @@ class Parser:
         self.current_token: Optional[Token] = self.scanner.next_token()
 
     def __eat(self, expected_token: TokenVariant) -> None:
-
         if self.current_token.token_variant != expected_token:
             raise UnexpectedTokenException(
                 message = "Parsing Error. Expected token: '{expected}' but '{given}' was given".format(
-                    expected = expected_token.value[0],
-                    given = self.current_token.token_variant.value[0],
+                    expected = expected_token.value,
+                    given = self.current_token.token_variant.value,
                 )
             )
 
         self.current_token = self.scanner.next_token()
-
-    def __peek(self) -> Token:
-        return self.scanner.peek()
 
     def __create_integer_literal_node(self) -> ASTnode:
         node = Literal(
@@ -211,7 +207,6 @@ class Parser:
         self.__eat(TokenVariant.T_RIGHT_CURLY_P)
 
         return node
-
 
     # TODO: Mozno skusit potom urobit samostatny block.
     def __parse_statements(self, until_curly_p: bool = False) -> ASTnode:

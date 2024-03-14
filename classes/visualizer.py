@@ -27,6 +27,29 @@ class Visualizer(graphviz.Digraph, VisitorVisualizer):
         self.stack.append(stack_value)
         self.parents.append(parent_value)
 
+    def __traverse_ast(self) -> None:
+        while self.stack:
+            current_node = self.stack.popleft()
+            parent = self.parents.popleft()
+
+            self.add(current_node, parent = parent)
+
+    def __generate_node_name(self, node: ASTnode, extra_info: str = '') -> (str, str):
+        node_group_count: int = self.nodes.get(str(node))
+        id_name = f"{node}_{str(node_group_count + 1)}"
+        label_name = f"{node} {extra_info}"
+        self.nodes[str(node)] += 1
+
+        return id_name, label_name
+
+    def __add_node(self, node: ASTnode, extra_info: str = '') -> str:
+        id_name, label_name = self.__generate_node_name(
+            node = node,
+            extra_info = extra_info
+        )
+        self.node(id_name, label_name)
+        return id_name
+
     def add_program(self, node: Program, _: str) -> None:
         current_node_name = self.__add_node(node)
         self.__increase_queues(stack_value = node.block, parent_value = current_node_name)
@@ -48,7 +71,7 @@ class Visualizer(graphviz.Digraph, VisitorVisualizer):
     def add_literal(self, node: Literal, parent: str) -> None:
         current_node_name = self.__add_node(
             node = node,
-            extra_info = f"type: {node.token_type.value} | value: {node.value}"
+            extra_info = f"type: {node.token_type.value[0]} | value: {node.value}"
         )
         self.edge(parent, current_node_name)
 
@@ -101,29 +124,6 @@ class Visualizer(graphviz.Digraph, VisitorVisualizer):
 
         for statement in node.statements:
             self.__increase_queues(stack_value = statement, parent_value = current_node_name)
-
-    def __traverse_ast(self) -> None:
-        while self.stack:
-            current_node = self.stack.popleft()
-            parent = self.parents.popleft()
-
-            self.add(current_node, parent = parent)
-
-    def __generate_node_name(self, node: ASTnode, extra_info: str = '') -> (str, str):
-        node_group_count: int = self.nodes.get(str(node))
-        id_name = f"{node}_{str(node_group_count + 1) }"
-        label_name = f"{node} {extra_info}"
-        self.nodes[str(node)] += 1
-
-        return id_name, label_name
-
-    def __add_node(self, node: ASTnode, extra_info: str = '') -> str:
-        id_name, label_name = self.__generate_node_name(
-            node = node,
-            extra_info = extra_info
-        )
-        self.node(id_name, label_name)
-        return id_name
 
     def visualize_tree(self) -> None:
         self.__traverse_ast()

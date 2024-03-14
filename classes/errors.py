@@ -1,38 +1,34 @@
-class UnexpectedCharacterException(Exception):
+class GeneralException(Exception):
     def __init__(self, message: str = None):
-        self.message = f'{self.__class__.__name__}: {message}'
-        super().__init__(self.message)
+        self.message: str = f'{self.__class__.__name__}: {message}'
 
-
-class UnexpectedTokenException(Exception):
-    def __init__(self, message: str = None):
-        self.message = f'{self.__class__.__name__}: {message}'
-        super().__init__(self.message)
-
-
-# TODO: Mozno trosku prerobit tieto exceptiony
-# TODO: Doplnit row a column aby sa vedelo kde sa errory nachadzaju
-
-class InvalidOperandsForOperation(Exception):
-    def __init__(self, message: str = None):
-        self.message = f'{self.__class__.__name__}: {message}'
-        super().__init__(self.message)
-
-
-class UndeclaredVariable(Exception):
-    def __init__(self, message: str = None):
-        self.message = f'{self.__class__.__name__}: {message}'
-        super().__init__(self.message)
-
-    # TODO: Vytvor parent classu ktora bude dedit z Exception a dorob tam __str__
     def __str__(self):
         return self.message
 
+    def __repr__(self):
+        return self.__str__()
 
-class DuplicateVariableDeclaration(Exception):
+
+class UnexpectedCharacterException(GeneralException):
     def __init__(self, message: str = None):
-        self.message = f'{self.__class__.__name__}: {message}'
-        super().__init__(self.message)
+        super().__init__(message)
 
-    def __str__(self):
-        return self.message
+
+class UnexpectedTokenException(GeneralException):
+    def __init__(self, message: str = None):
+        super().__init__(message)
+
+
+class InvalidOperandsForOperation(GeneralException):
+    def __init__(self, message: str = None):
+        super().__init__(message)
+
+
+class UndeclaredVariable(GeneralException):
+    def __init__(self, message: str = None):
+        super().__init__(message)
+
+
+class DuplicateVariableDeclaration(GeneralException):
+    def __init__(self, message: str = None):
+        super().__init__(message)

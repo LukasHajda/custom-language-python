@@ -69,6 +69,20 @@ class Scanner:
         self.is_beginning: bool = True
         self.__set_text()
 
+    def __set_text(self) -> None:
+        with open(self.source, 'r') as file:
+            self.scanner.input(file.read())
+        file.close()
+
+    def __create_token(self, lex_token: LexToken) -> Token:
+        token_variant = TOKENS.get(lex_token.type, RESERVED_WORDS.get(lex_token.type))
+        return Token(
+            token_variant = token_variant,
+            value = lex_token.value.lower() if token_variant == TokenVariant.T_BOOLEAN else lex_token.value,
+            row = self.row,
+            column = self.column
+        )
+
     @update_position
     def t_ignore_newline(self, token: LexToken) -> None:
         r"""[\n]"""
@@ -168,6 +182,10 @@ class Scanner:
         r"""\!\="""
         return token
 
+    def t_negate(self, token: LexToken) -> LexToken:
+        r"""\!"""
+        return token
+
     @update_position
     def t_float(self, token: LexToken) -> LexToken:
         r"""([0-9]*\.[0-9]+)"""
@@ -186,31 +204,17 @@ class Scanner:
     @update_position
     def t_identifier(self, token: LexToken) -> LexToken:
         r"""[a-zA-Z_][a-zA-Z]+"""
-        token.type = token.value.lower() if token.value.lower() in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value
+        token.type = token.value.lower() if token.value.lower() in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value[0]
         return token
 
     def t_error(self, token: LexToken) -> None:
         token.lexer.skip(1)
         raise UnexpectedCharacterException(
             message = "Lexing Error. Unexpected character: '{token}' at line {row} and column {column}".format(
-                token = token.value,
+                token = token.value[1],
                 row = self.row,
                 column = self.column
             )
-        )
-
-    def __set_text(self) -> None:
-        with open(self.source, 'r') as file:
-            self.scanner.input(file.read())
-        file.close()
-
-    def __create_token(self, lex_token: LexToken) -> Token:
-        token_variant = TOKENS.get(lex_token.type, RESERVED_WORDS.get(lex_token.type))
-        return Token(
-            token_variant = token_variant,
-            value = lex_token.value.lower() if token_variant == TokenVariant.T_BOOLEAN else lex_token.value,
-            row = self.row,
-            column = self.column
         )
 
     def next_token(self) -> Token:
@@ -218,5 +222,9 @@ class Scanner:
             self.is_beginning = False
             return Token(TokenVariant.T_PROGRAM)
         else:
-            lex_token = self.scanner.token()
-            return self.__create_token(lex_token)
+            try:
+                lex_token = self.scanner.token()
+                return self.__create_token(lex_token)
+            except UnexpectedCharacterException as exception:
+                print(exception)
+                exit(0)

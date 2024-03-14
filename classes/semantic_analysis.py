@@ -39,19 +39,19 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
     def visit_program(self, node: Program):
         self.visit(node.block)
 
-    # Updatne sa symbolicka tabulka daneho scopu
     def visit_assignment_statement(self, node: AssignmentStatement):
         if not self.__check_variable_in_scopes(node.name.value):
             self.current_scope.add_variable(node.name)
         self.visit(node.value)
 
-    # SKontroluj ci sa nachadza v scopoch
     def visit_variable(self, node: Variable) -> bool:
         if self.__check_variable_in_scopes(node.value):
             return True
         raise UndeclaredVariable(
-            message = "Undeclared variable: {variable}".format(
-                variable = node.value
+            message = "Undeclared variable: '{variable}' at line {row} and column {column}".format(
+                variable = node.value,
+                row = node.row,
+                column = node.column
             )
         )
 

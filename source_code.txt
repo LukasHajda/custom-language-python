@@ -1,8 +1,11 @@
-lubo is 10.
+aaa is False.
 
+While ( aaa != True ) {
+    boo is 6.
 
-if ( True ) {
-    hoo is 20.
+    if (boo > 7) {
+        hello is 10.
+    } else {
+        boo is 65.
+    }
 }
-
-lubo is hoo.

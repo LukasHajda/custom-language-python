@@ -83,9 +83,11 @@ class Literal(ASTnode):
 
 
 class Variable(ASTnode):
-    def __init__(self, value: str):
+    def __init__(self, value: str, row: int, column: int):
         super().__init__(NodeVariant.N_VARIABLE)
         self.value: str = value
+        self.row: int = row
+        self.column: int = column
 
 
 class Condition(ASTnode):

@@ -13,9 +13,11 @@ class Parser:
     def __eat(self, expected_token: TokenVariant) -> None:
         if self.current_token.token_variant != expected_token:
             raise UnexpectedTokenException(
-                message = "Parsing Error. Expected token: '{expected}' but '{given}' was given".format(
-                    expected = expected_token.value,
-                    given = self.current_token.token_variant.value,
+                message = "Expected token: '{expected}' but '{given}' was given at row {row} and column {column}".format(
+                    expected = expected_token.value[1],
+                    given = self.current_token.token_variant.value[1],
+                    row = self.current_token.row,
+                    column = self.current_token.column
                 )
             )
 
@@ -60,7 +62,9 @@ class Parser:
 
     def __create_variable(self) -> ASTnode:
         node = Variable(
-            value = self.current_token.value
+            value = self.current_token.value,
+            row = self.current_token.row,
+            column = self.current_token.column
         )
 
         self.__eat(self.current_token.token_variant)
@@ -235,6 +239,10 @@ class Parser:
         return block
 
     def parse(self) -> Program:
-        return self.__parse_program()
+        try:
+            return self.__parse_program()
+        except (UnexpectedTokenException, UnexpectedTokenException) as exception:
+            print(exception)
+            exit(0)
 
 

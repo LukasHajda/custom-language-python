@@ -1,3 +1,5 @@
 .idea
 venv
 classes/__pycache__
+graph
+graph.pdf

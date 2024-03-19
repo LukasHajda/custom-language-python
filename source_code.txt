@@ -1,11 +1,1 @@
-aaa is False.
-
-While ( aaa != True ) {
-    boo is 6.
-
-    if (boo > 7) {
-        hello is 10.
-    } else {
-        boo is 65.
-    }
-}
+do premenna1 prirad (5 + premenna2).

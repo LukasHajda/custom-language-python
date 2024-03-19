@@ -1,0 +1,32 @@
+program         =  statements;
+
+statements      =  statement { statement };
+
+statement       =  assignment
+                   |  if_statement
+                   |  while_loop;
+
+assignment      =  "do" identifier "prirad" expression ".";
+
+if_statement    =  "ak" "(" condition ")" "tak" block [ "inac" block ];
+while_loop      =  "pokial" "(" condition ")" block;
+
+block           =  "{" statement { statement } "}";
+condition       =  expression ( "==" | "!=" | ">" | "<" | ">=" | "<=" ) expression;
+
+expression      =  term { ( "+" | "-" ) term };
+term            =  factor { ( "*" | "/" | "%" | "//" ) factor };
+
+factor          =  identifier
+                   |  "-" factor
+                   |  "+" factor
+                   |  "(" expression ")"
+                   |  literal;
+
+identifier      =  ("_" | letter) {(letter | digit)};
+integer         =  digit {digit};
+float           =  digit {digit} "." digit {digit};
+literal         =  integer | float;
+
+letter          =  "a" | ... | "z" | "A" | ... | "Z";
+digit           =  "0" | "1" | "2" | ... | "9";

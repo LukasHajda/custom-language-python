@@ -6,13 +6,11 @@ from ply import lex
 from classes.errors import UnexpectedCharacterException
 
 RESERVED_WORDS: dict = {
-    'if': TokenVariant.T_IF,
-    'while': TokenVariant.T_WHILE,
-    'else': TokenVariant.T_ELSE,
-    'null': TokenVariant.T_NULL,
-    'false': TokenVariant.T_BOOLEAN,
-    'true': TokenVariant.T_BOOLEAN,
-    'is': TokenVariant.T_ASSIGN
+    'ak': TokenVariant.T_IF, 'inac': TokenVariant.T_ELSE,
+    'tak': TokenVariant.T_THEN, 'pokial': TokenVariant.T_WHILE,
+    'nepravda': TokenVariant.T_BOOLEAN, 'pravda': TokenVariant.T_BOOLEAN,
+    'prirad': TokenVariant.T_ASSIGN, 'do': TokenVariant.T_TO,
+    'null': TokenVariant.T_NULL
 }
 
 TOKENS: dict = {
@@ -25,12 +23,13 @@ TOKENS: dict = {
     'equal': TokenVariant.T_EQUAL, 'not_equal': TokenVariant.T_NOT_EQUAL,
 
     'integer': TokenVariant.T_INTEGER, 'float': TokenVariant.T_FLOAT,
-    'eof': TokenVariant.T_EOF,
+    'eof': TokenVariant.T_EOF, 'number': TokenVariant.T_NUMBER,
 
     'identifier': TokenVariant.T_IDENTIFIER,
 
     'left_p': TokenVariant.T_LEFT_P, 'right_p': TokenVariant.T_RIGHT_P,
     'left_curly_p': TokenVariant.T_LEFT_CURLY_P, 'right_curly_p': TokenVariant.T_RIGHT_CURLY_P,
+    'left_square_p': TokenVariant.T_LEFT_SQUARE_P, 'right_square_p': TokenVariant.T_RIGHT_SQUARE_P,
     'dot': TokenVariant.T_DOT,
 
     'ignore_whitespace': TokenVariant.T_WHITESPACE, 'ignore_comments': TokenVariant.T_COMMENT,
@@ -40,7 +39,6 @@ TOKENS: dict = {
 
 
 def update_position(function: Callable) -> Callable:
-
     @functools.wraps(function)
     def wrapper(self: Any, token: LexToken) -> LexToken:
         if token.value == '\n':
@@ -182,13 +180,10 @@ class Scanner:
         r"""\!\="""
         return token
 
-    def t_negate(self, token: LexToken) -> LexToken:
-        r"""\!"""
-        return token
-
     @update_position
-    def t_float(self, token: LexToken) -> LexToken:
-        r"""([0-9]*\.[0-9]+)"""
+    def t_number(self, token: LexToken) -> LexToken:
+        r"""(([0-9]*\.)?[0-9]+)"""
+        token.type = TokenVariant.T_FLOAT.value[0] if '.' in token.value else TokenVariant.T_INTEGER.value[0]
         return token
 
     @update_position
@@ -197,13 +192,8 @@ class Scanner:
         return token
 
     @update_position
-    def t_integer(self, token: LexToken) -> LexToken:
-        r"""[0-9]+"""
-        return token
-
-    @update_position
     def t_identifier(self, token: LexToken) -> LexToken:
-        r"""[a-zA-Z_][a-zA-Z]+"""
+        r"""[a-zA-Z_][a-zA-Z0-9]+"""
         token.type = token.value.lower() if token.value.lower() in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value[0]
         return token
 

@@ -4,8 +4,36 @@ digraph {
 	Program_1 -> Block_1
 	AssignmentStatement_1 [label="AssignmentStatement "]
 	Block_1 -> AssignmentStatement_1
-	Variable_1 [label="Variable name: abb"]
+	AssignmentStatement_2 [label="AssignmentStatement "]
+	Block_1 -> AssignmentStatement_2
+	IfStatement_1 [label="IfStatement "]
+	Block_1 -> IfStatement_1
+	Variable_1 [label="Variable name: premenna1"]
 	AssignmentStatement_1 -> Variable_1
-	Literal_1 [label="Literal type: integer | value: 4"]
+	Literal_1 [label="Literal type: integer | value: 5"]
 	AssignmentStatement_1 -> Literal_1
+	Variable_2 [label="Variable name: premenna2"]
+	AssignmentStatement_2 -> Variable_2
+	BinaryOperation_1 [label="BinaryOperation operator: +"]
+	AssignmentStatement_2 -> BinaryOperation_1
+	Condition_1 [label="Condition "]
+	IfStatement_1 -> Condition_1
+	Block_2 [label="Block "]
+	IfStatement_1 -> Block_2
+	Literal_2 [label="Literal type: integer | value: 3"]
+	BinaryOperation_1 -> Literal_2
+	Variable_3 [label="Variable name: premenna1"]
+	BinaryOperation_1 -> Variable_3
+	BinaryOperation_2 [label="BinaryOperation operator: >"]
+	Condition_1 -> BinaryOperation_2
+	AssignmentStatement_3 [label="AssignmentStatement "]
+	Block_2 -> AssignmentStatement_3
+	Variable_4 [label="Variable name: premenna1"]
+	BinaryOperation_2 -> Variable_4
+	Variable_5 [label="Variable name: premenna2"]
+	BinaryOperation_2 -> Variable_5
+	Variable_6 [label="Variable name: premenna1"]
+	AssignmentStatement_3 -> Variable_6
+	Literal_3 [label="Literal type: boolean | value: True"]
+	AssignmentStatement_3 -> Literal_3
 }

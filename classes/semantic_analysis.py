@@ -36,10 +36,10 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
                 return True
         return False
 
-    def visit_program(self, node: Program):
+    def visit_program(self, node: Program) -> None:
         self.visit(node.block)
 
-    def visit_assignment_statement(self, node: AssignmentStatement):
+    def visit_assignment_statement(self, node: AssignmentStatement) -> None:
         if not self.__check_variable_in_scopes(node.name.value):
             self.current_scope.add_variable(node.name)
         self.visit(node.value)
@@ -55,41 +55,41 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
             )
         )
 
-    def visit_literal(self, node: Literal):
+    def visit_literal(self, node: Literal) -> None:
         pass
 
-    def visit_if_statement(self, node: IfStatement):
+    def visit_if_statement(self, node: IfStatement) -> None:
         self.visit(node.condition)
         self.visit(node.block)
 
         if node.else_block:
             self.visit(node.else_block)
 
-    def visit_else_statement(self, node: ElseStatement):
+    def visit_else_statement(self, node: ElseStatement) -> None:
         self.visit(node.block)
 
-    def visit_binary_operation(self, node: BinaryOperation):
+    def visit_binary_operation(self, node: BinaryOperation) -> None:
         self.visit(node.left_operand)
         self.visit(node.right_operand)
 
-    def visit_unary_operation(self, node: UnaryOperation):
+    def visit_unary_operation(self, node: UnaryOperation) -> None:
         self.visit(node.operand)
 
-    def visit_while_statement(self, node: WhileStatement):
+    def visit_while_statement(self, node: WhileStatement) -> None:
         self.visit(node.condition)
         self.visit(node.block)
 
-    def visit_condition(self, node: Condition):
+    def visit_condition(self, node: Condition) -> None:
         self.visit(node.value)
 
-    def visit_block(self, node: Block):
+    def visit_block(self, node: Block) -> None:
         scope = self.__create_program_scope()
         self.__add_new_scope(scope)
         for statement in node.statements:
             self.visit(statement)
         self.__exit_scope()
 
-    def check(self):
+    def check(self) -> None:
         try:
             self.visit(self.root)
         except UndeclaredVariable as exception:

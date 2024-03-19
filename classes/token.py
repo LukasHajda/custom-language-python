@@ -3,12 +3,8 @@ from enum import Enum
 
 class TokenVariant(Enum):
     T_PROGRAM = ('program', 'program')
-
-    # END OF EXPRESSION
     T_DOT = ('dot', '.')
-
-    # OPERATORS
-    T_ASSIGN = ('assign', 'is')
+    T_ASSIGN = ('assign', 'prirad')
     T_PLUS = ('plus', '+')
     T_MINUS = ('minus', '-')
     T_DIVISION = ('division', '/')
@@ -23,6 +19,7 @@ class TokenVariant(Enum):
     T_NOT_EQUAL = ('not_equal', '!=')
 
     # TYPES
+    T_NUMBER = ('number', 'number')
     T_INTEGER = ('integer', 'integer')
     T_FLOAT = ('float', 'float')
     T_STRING = ('string', 'string')
@@ -32,16 +29,19 @@ class TokenVariant(Enum):
 
     # RESERVED WORDS
     T_IDENTIFIER = ('identifier', 'identifier')
-    # T_NEGATE = ('negate', '!')
-    T_IF = ('if', 'if')
-    T_ELSE = ('else', 'else')
-    T_WHILE = ('while', 'while')
+    T_IF = ('ak', 'ak')
+    T_ELSE = ('else', 'inac')
+    T_WHILE = ('while', 'pokial')
+    T_THEN = ('tak', 'tak')
 
     # OTHERS
     T_LEFT_P = ('left_p', '(')
     T_RIGHT_P = ('right_p', ')')
     T_LEFT_CURLY_P = ('left_curly_p', '{')
     T_RIGHT_CURLY_P = ('right_curly_p', '}')
+    T_LEFT_SQUARE_P = ('left_square_p', '[')
+    T_RIGHT_SQUARE_P = ('right_square_p', ']')
+    T_TO = ('do', 'do')
 
     # Errors
     T_ERROR = ('error', 'error')

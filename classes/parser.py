@@ -43,7 +43,7 @@ class Parser:
     def __create_boolean_literal_node(self) -> ASTnode:
         node = Literal(
             token_variant = TokenVariant.T_BOOLEAN,
-            value = 'true' == self.current_token.value
+            value = 'pravda' == self.current_token.value
         )
 
         self.__eat(TokenVariant.T_BOOLEAN)
@@ -158,6 +158,7 @@ class Parser:
         return root
 
     def __parse_assignment(self) -> ASTnode:
+        self.__eat(TokenVariant.T_TO)
         node = AssignmentStatement()
 
         node.name = self.__create_variable()
@@ -185,6 +186,7 @@ class Parser:
         node.condition = Condition()
         node.condition.value = self.__parse_condition()
         self.__eat(TokenVariant.T_RIGHT_P)
+        self.__eat(TokenVariant.T_THEN)
         self.__eat(TokenVariant.T_LEFT_CURLY_P)
         node.block = self.__parse_statements(until_curly_p = True)
 
@@ -221,7 +223,7 @@ class Parser:
         ):
 
             match self.current_token.token_variant:
-                case TokenVariant.T_IDENTIFIER:
+                case TokenVariant.T_TO:
                     statement = self.__parse_assignment()
                     block.statements.append(statement)
                     self.__eat(TokenVariant.T_DOT)
@@ -241,7 +243,7 @@ class Parser:
     def parse(self) -> Program:
         try:
             return self.__parse_program()
-        except (UnexpectedTokenException, UnexpectedTokenException) as exception:
+        except (UnexpectedTokenException, ) as exception:
             print(exception)
             exit(0)
 

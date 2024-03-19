@@ -78,7 +78,7 @@ class Visualizer(graphviz.Digraph, VisitorVisualizer):
     def add_binary_operation(self, node: BinaryOperation, parent: str) -> None:
         current_node_name = self.__add_node(
             node = node,
-            extra_info = f"operator: {node.operator.value}"
+            extra_info = f"operator: {node.operator.value[1]}"
         )
         self.edge(parent, current_node_name)
         self.__increase_queues(stack_value = node.left_operand, parent_value = current_node_name)

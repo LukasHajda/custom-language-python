@@ -49,6 +49,15 @@ class Parser:
         self.__eat(TokenVariant.T_BOOLEAN)
         return node
 
+    def __create_string_literal(self) -> ASTnode:
+        node = Literal(
+            token_variant = TokenVariant.T_STRING,
+            value = self.current_token.value
+        )
+
+        self.__eat(TokenVariant.T_STRING)
+        return node
+
     def __create_unary_operation_node(self) -> ASTnode:
         operator = self.current_token.token_variant
         self.__eat(self.current_token.token_variant)
@@ -67,7 +76,7 @@ class Parser:
             column = self.current_token.column
         )
 
-        self.__eat(self.current_token.token_variant)
+        self.__eat(TokenVariant.T_IDENTIFIER)
         return node
 
     def __parse_factor(self) -> ASTnode:
@@ -76,6 +85,8 @@ class Parser:
                 return self.__create_integer_literal_node()
             case TokenVariant.T_FLOAT:
                 return self.__create_float_literal_node()
+            case TokenVariant.T_STRING:
+                return self.__create_string_literal()
             case TokenVariant.T_BOOLEAN:
                 return self.__create_boolean_literal_node()
             case TokenVariant.T_MINUS:
@@ -206,6 +217,7 @@ class Parser:
         node.condition = Condition()
         node.condition.value = self.__parse_condition()
         self.__eat(TokenVariant.T_RIGHT_P)
+        self.__eat(TokenVariant.T_THEN)
         self.__eat(TokenVariant.T_LEFT_CURLY_P)
 
         node.block = self.__parse_statements(until_curly_p = True)

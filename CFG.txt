@@ -9,7 +9,7 @@ statement       =  assignment
 assignment      =  "do" identifier "prirad" expression ".";
 
 if_statement    =  "ak" "(" condition ")" "tak" block [ "inac" block ];
-while_loop      =  "pokial" "(" condition ")" block;
+while_loop      =  "pokial" "(" condition ")" "tak" block;
 
 block           =  "{" statement { statement } "}";
 condition       =  expression ( "==" | "!=" | ">" | "<" | ">=" | "<=" ) expression;

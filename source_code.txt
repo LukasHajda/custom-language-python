@@ -1,1 +1,9 @@
-do premenna1 prirad (5 + premenna2).
+do cislo1 prirad 5.
+
+do cislo2 prirad 45.23.
+
+do text prirad "Ahoj svet".
+
+do bool1 prirad pravda.
+
+do bool2 prirad nepravda.

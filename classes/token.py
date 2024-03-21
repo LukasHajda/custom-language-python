@@ -30,7 +30,7 @@ class TokenVariant(Enum):
     # RESERVED WORDS
     T_IDENTIFIER = ('identifier', 'identifier')
     T_IF = ('ak', 'ak')
-    T_ELSE = ('else', 'inac')
+    T_ELSE = ('else', 'inak')
     T_WHILE = ('while', 'pokial')
     T_THEN = ('tak', 'tak')
 

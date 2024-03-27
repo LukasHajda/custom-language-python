@@ -39,6 +39,9 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
     def visit_program(self, node: Program) -> None:
         self.visit(node.block)
 
+    def visit_print_statement(self, node: PrintStatement) -> None:
+        self.visit(node.value)
+
     def visit_assignment_statement(self, node: AssignmentStatement) -> None:
         if not self.__check_variable_in_scopes(node.name.value):
             self.current_scope.add_variable(node.name)
@@ -94,3 +97,4 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
             self.visit(self.root)
         except UndeclaredVariable as exception:
             print(exception)
+            exit(0)

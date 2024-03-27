@@ -2,6 +2,11 @@ from enum import Enum
 
 
 class TokenVariant(Enum):
+    T_PRINT = ('print', 'print')
+    T_FUNCTION = ('function', 'funkcia')
+    T_RETURN = ('return', 'vrat')
+    T_COLON = ('colon', ',')
+
     T_PROGRAM = ('program', 'program')
     T_DOT = ('dot', '.')
     T_ASSIGN = ('assign', 'prirad')

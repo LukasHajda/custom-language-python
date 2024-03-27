@@ -10,7 +10,10 @@ RESERVED_WORDS: dict = {
     'tak': TokenVariant.T_THEN, 'pokial': TokenVariant.T_WHILE,
     'nepravda': TokenVariant.T_BOOLEAN, 'pravda': TokenVariant.T_BOOLEAN,
     'prirad': TokenVariant.T_ASSIGN, 'do': TokenVariant.T_TO,
-    'null': TokenVariant.T_NULL
+    'null': TokenVariant.T_NULL,
+    'print': TokenVariant.T_PRINT,
+    'funkcia': TokenVariant.T_FUNCTION,
+    'vrat': TokenVariant.T_RETURN
 }
 
 TOKENS: dict = {
@@ -31,7 +34,7 @@ TOKENS: dict = {
     'left_p': TokenVariant.T_LEFT_P, 'right_p': TokenVariant.T_RIGHT_P,
     'left_curly_p': TokenVariant.T_LEFT_CURLY_P, 'right_curly_p': TokenVariant.T_RIGHT_CURLY_P,
     'left_square_p': TokenVariant.T_LEFT_SQUARE_P, 'right_square_p': TokenVariant.T_RIGHT_SQUARE_P,
-    'dot': TokenVariant.T_DOT,
+    'dot': TokenVariant.T_DOT, 'colon': TokenVariant.T_COLON,
 
     'ignore_whitespace': TokenVariant.T_WHITESPACE, 'ignore_comments': TokenVariant.T_COMMENT,
     'ignore_newline': TokenVariant.T_NEWLINE,
@@ -149,6 +152,11 @@ class Scanner:
     @update_position
     def t_left_curly_p(self, token: LexToken) -> LexToken:
         r"""\{"""
+        return token
+
+    @update_position
+    def t_colon(self, token: LexToken) -> LexToken:
+        r"""\,"""
         return token
 
     @update_position

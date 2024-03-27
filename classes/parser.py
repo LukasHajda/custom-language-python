@@ -141,7 +141,7 @@ class Parser:
     def __parse_condition(self) -> ASTnode:
         node = self.__parse_expression()
 
-        while self.current_token.token_variant in (
+        if self.current_token.token_variant in (
             TokenVariant.T_EQUAL,
             TokenVariant.T_NOT_EQUAL,
             TokenVariant.T_LESS,
@@ -155,7 +155,7 @@ class Parser:
 
             node = BinaryOperation(
                 left_operand = node,
-                right_operand = self.__parse_term(),
+                right_operand = self.__parse_expression(),
                 operator = current_token
             )
 
@@ -208,6 +208,18 @@ class Parser:
 
         return node
 
+    def __parse_print(self) -> ASTnode:
+        node = PrintStatement()
+        self.__eat(TokenVariant.T_PRINT)
+        self.__eat(TokenVariant.T_LEFT_P)
+
+        node.value = self.__parse_expression()
+
+        self.__eat(TokenVariant.T_RIGHT_P)
+        self.__eat(TokenVariant.T_DOT)
+
+        return node
+
     def __parse_while(self) -> ASTnode:
         node = WhileStatement()
 
@@ -225,6 +237,78 @@ class Parser:
         self.__eat(TokenVariant.T_RIGHT_CURLY_P)
 
         return node
+
+    def __parse_arguments(self) -> ASTnode:
+        argument_list = ArgumentList()
+
+        while self.current_token.token_variant != TokenVariant.T_RIGHT_P:
+            argument = Argument()
+            argument.value = self.__parse_expression()
+
+            argument_list.arguments.append(argument)
+
+        return argument_list
+
+    def __parse_parameters(self) -> ASTnode:
+        parameter_list = ParameterList()
+        first_parameter = True
+
+        while self.current_token.token_variant != TokenVariant.T_RIGHT_P:
+            if not first_parameter:
+                self.__eat(TokenVariant.T_COLON)
+
+            parameter = Parameter(
+                name = self.current_token.value
+            )
+            parameter_list.parameters.append(parameter)
+            self.__eat(TokenVariant.T_IDENTIFIER)
+            first_parameter = False
+
+        self.__eat(TokenVariant.T_RIGHT_P)
+
+        return parameter_list
+
+    def __parse_function_declaration(self) -> ASTnode:
+        self.__eat(TokenVariant.T_FUNCTION)
+
+        function = FunctionDeclaration()
+        function.name = self.current_token.value
+
+        self.__eat(TokenVariant.T_IDENTIFIER)
+        self.__eat(TokenVariant.T_LEFT_P)
+        function.parameter_list = self.__parse_parameters()
+
+        self.__eat(TokenVariant.T_LEFT_CURLY_P)
+        function.block = self.__parse_statements(until_curly_p = True)
+
+        self.__eat(TokenVariant.T_RIGHT_CURLY_P)
+
+        return function
+
+    def __parser_return_statement(self) -> ASTnode:
+        self.__eat(TokenVariant.T_RETURN)
+
+        return_statement = ReturnStatement()
+        return_statement.value = self.__parse_expression()
+
+        self.__eat(TokenVariant.T_DOT)
+
+        return return_statement
+
+    def __parser_function_call(self) -> ASTnode:
+        function_call = FunctionCall()
+        function_call.name = self.current_token.value
+
+        self.__eat(TokenVariant.T_IDENTIFIER)
+        self.__eat(TokenVariant.T_LEFT_P)
+
+        function_call.argument_list = self.__parse_arguments()
+
+        self.__eat(TokenVariant.T_RIGHT_P)
+        self.__eat(TokenVariant.T_DOT)
+
+        return function_call
+
 
     # TODO: Mozno skusit potom urobit samostatny block.
     def __parse_statements(self, until_curly_p: bool = False) -> ASTnode:
@@ -244,6 +328,19 @@ class Parser:
                     block.statements.append(statement)
                 case TokenVariant.T_WHILE:
                     statement = self.__parse_while()
+                    block.statements.append(statement)
+                # Function call
+                case TokenVariant.T_IDENTIFIER:
+                    function_call = self.__parser_function_call()
+                    block.statements.append(function_call)
+                case TokenVariant.T_PRINT:
+                    statement = self.__parse_print()
+                    block.statements.append(statement)
+                case TokenVariant.T_FUNCTION:
+                    function_declaration = self.__parse_function_declaration()
+                    block.statements.append(function_declaration)
+                case TokenVariant.T_RETURN:
+                    statement = self.__parser_return_statement()
                     block.statements.append(statement)
                 case _:
                     raise UnexpectedTokenException(

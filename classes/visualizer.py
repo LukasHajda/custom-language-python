@@ -18,7 +18,15 @@ class Visualizer(graphviz.Digraph, VisitorVisualizer):
             Variable.__name__: 0,
             Literal.__name__: 0,
             Condition.__name__: 0,
-            Block.__name__: 0
+            Block.__name__: 0,
+            PrintStatement.__name__: 0,
+            FunctionDeclaration.__name__: 0,
+            FunctionCall.__name__: 0,
+            Parameter.__name__: 0,
+            ParameterList.__name__: 0,
+            ArgumentList.__name__: 0,
+            Argument.__name__: 0,
+            ReturnStatement.__name__: 0
         }
 
     def __traverse_ast(self) -> None:
@@ -42,6 +50,51 @@ class Visualizer(graphviz.Digraph, VisitorVisualizer):
     def add_program(self, node: Program, _: str) -> None:
         current_node_name = self.__add_node(node)
         self.add(node.block, parent = current_node_name)
+
+    def add_argument_list(self, node: ArgumentList, parent: str) -> None:
+        current_node_name = self.__add_node(node)
+        self.edge(parent, current_node_name)
+
+        for argument in node.arguments:
+            self.add(argument, parent = current_node_name)
+
+    def add_parameter_list(self, node: ParameterList, parent: str) -> None:
+        current_node_name = self.__add_node(node)
+        self.edge(parent, current_node_name)
+
+        for parameter in node.parameters:
+            self.add(parameter, parent = current_node_name)
+
+    def add_argument(self, node: Argument, parent: str) -> None:
+        current_node_name = self.__add_node(node, extra_info = str(self.nodes.get(str(node)) + 1))
+        self.edge(parent, current_node_name)
+        self.add(node.value, parent = current_node_name)
+
+    def add_parameter(self, node: Parameter, parent: str) -> None:
+        current_node_name = self.__add_node(
+            node = node,
+            extra_info = f"name: {node.name}"
+        )
+        self.edge(parent, current_node_name)
+
+    def add_function_call(self, node: FunctionCall, parent: str) -> None:
+        current_node_name = self.__add_node(node, extra_info = node.name)
+        self.edge(parent, current_node_name)
+
+        self.add(node.argument_list, parent = current_node_name)
+
+    def add_function_declaration(self, node: FunctionDeclaration, parent: str) -> None:
+        current_node_name = self.__add_node(node, extra_info = node.name)
+        self.edge(parent, current_node_name)
+
+        self.add(node.parameter_list, parent = current_node_name)
+        self.add(node.block, parent = current_node_name)
+
+    def add_return_statement(self, node: ReturnStatement, parent: str) -> None:
+        current_node_name = self.__add_node(node)
+        self.edge(parent, current_node_name)
+
+        self.add(node.value, parent = current_node_name)
 
     def add_assignment_statement(self, node: AssignmentStatement, parent: str) -> None:
         current_node_name = self.__add_node(node)
@@ -91,6 +144,12 @@ class Visualizer(graphviz.Digraph, VisitorVisualizer):
 
         if node.else_block:
             self.add(node.else_block, parent = current_node_name)
+
+    def add_print_statement(self, node: PrintStatement, parent: str) -> None:
+        current_node_name = self.__add_node(node)
+        self.edge(parent, current_node_name)
+
+        self.add(node.value, parent = current_node_name)
 
     def add_else_statement(self, node: ElseStatement, parent: str) -> None:
         current_node_name = self.__add_node(node)

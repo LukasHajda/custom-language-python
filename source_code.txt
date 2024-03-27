@@ -1,5 +1,7 @@
-ak (pravda) tak {
-    do premenna1 prirad 1.
-} inak {
-    do premenna1 prirad 2.
+funkcia foo(xg, ty, gy) {
+ ak (pravda) tak {
+    boo(5).
+ }
+
+ vrat xf.
 }

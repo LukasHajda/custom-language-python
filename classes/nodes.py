@@ -16,6 +16,14 @@ class NodeVariant(Enum):
     N_VARIABLE = 'variable'
     N_CONDITION = 'condition'
     N_BLOCK = 'block'
+    N_PRINT_STATEMENT = 'print_statement'
+    N_FUNCTION_DECLARATION = 'function_declaration'
+    N_FUNCTION_CALL = 'function_call'
+    N_ARGUMENT_LIST = 'argument_list'
+    N_ARGUMENT = 'argument'
+    N_PARAMETER = 'parameter'
+    N_PARAMETER_LIST = 'parameter_list'
+    N_RETURN_STATEMENT = 'return_statement'
 
 
 class ASTnode:
@@ -32,10 +40,61 @@ class Program(ASTnode):
         self.block: Optional[Block] = None
 
 
+class Parameter(ASTnode):
+    def __init__(self, name: str):
+        super().__init__(NodeVariant.N_PARAMETER)
+        self.name: str = name
+
+
+class Argument(ASTnode):
+    def __init__(self):
+        super().__init__(NodeVariant.N_ARGUMENT)
+        self.value: Optional[ASTnode] = None
+
+
+class ParameterList(ASTnode):
+    def __init__(self):
+        super().__init__(NodeVariant.N_PARAMETER_LIST)
+        self.parameters: deque = deque()
+
+
+class ArgumentList(ASTnode):
+    def __init__(self):
+        super().__init__(NodeVariant.N_ARGUMENT_LIST)
+        self.arguments: deque = deque()
+
+
+class ReturnStatement(ASTnode):
+    def __init__(self):
+        super().__init__(NodeVariant.N_RETURN_STATEMENT)
+        self.value: Optional[ASTnode] = None
+
+
+class FunctionDeclaration(ASTnode):
+    def __init__(self):
+        super().__init__(NodeVariant.N_FUNCTION_DECLARATION)
+        self.name: Optional[str] = None
+        self.parameter_list: Optional[ParameterList] = None
+        self.block: Optional[Block] = None
+
+
+class FunctionCall(ASTnode):
+    def __init__(self):
+        super().__init__(NodeVariant.N_FUNCTION_CALL)
+        self.name: Optional[str] = None
+        self.argument_list: Optional[ArgumentList] = None
+
+
 class AssignmentStatement(ASTnode):
     def __init__(self):
         super().__init__(NodeVariant.N_ASSIGNMENT_STATEMENT)
         self.name: Optional[Variable] = None
+        self.value: Optional[ASTnode] = None
+
+
+class PrintStatement(ASTnode):
+    def __init__(self):
+        super().__init__(NodeVariant.N_PRINT_STATEMENT)
         self.value: Optional[ASTnode] = None
 
 

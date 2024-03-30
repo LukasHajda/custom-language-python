@@ -1,5 +1,5 @@
 from classes.nodes import ASTnode
-from typing import Callable
+from typing import Callable, Any
 
 
 class VisitorSemanticAnalyzer:
@@ -13,8 +13,18 @@ class VisitorSemanticAnalyzer:
 
 class VisitorVisualizer:
     def add(self, node: ASTnode, **kwargs) -> Callable | Exception:
+        print(node)
         method = getattr(self, f"add_{node.type.value}", self.__exception_add)
         return method(node, kwargs['parent'])
 
     def __exception_add(self, node: ASTnode, _) -> Exception:
         return Exception(f'No add_{node.type.value} method')
+
+
+class VisitorInterpreter:
+    def evaluate(self, node: ASTnode) -> Any:
+        method = getattr(self, f"evaluate_{node.type.value}", self.__exception_evaluate)
+        return method(node)
+
+    def __exception_evaluate(self, node: ASTnode) -> Exception:
+        raise Exception(f'No evaluate_{node.type.value} method')

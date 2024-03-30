@@ -1,11 +1,7 @@
-aaa is False.
+funkcia foo(xg, ty, gy) {
+ ak (pravda) tak {
+    boo(5).
+ }
 
-While ( aaa != True ) {
-    boo is 6.
-
-    if (boo > 7) {
-        hello is 10.
-    } else {
-        boo is 65.
-    }
+ vrat xf.
 }

@@ -276,10 +276,11 @@ class Parser:
 
         self.__eat(TokenVariant.T_IDENTIFIER)
         self.__eat(TokenVariant.T_LEFT_P)
-        function.parameter_list = self.__parse_parameters()
+        parameter_list = self.__parse_parameters()
 
         self.__eat(TokenVariant.T_LEFT_CURLY_P)
         function.block = self.__parse_statements(until_curly_p = True)
+        function.block.statements.appendleft(parameter_list)
 
         self.__eat(TokenVariant.T_RIGHT_CURLY_P)
 

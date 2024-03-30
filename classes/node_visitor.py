@@ -13,6 +13,7 @@ class VisitorSemanticAnalyzer:
 
 class VisitorVisualizer:
     def add(self, node: ASTnode, **kwargs) -> Callable | Exception:
+        print(node)
         method = getattr(self, f"add_{node.type.value}", self.__exception_add)
         return method(node, kwargs['parent'])
 

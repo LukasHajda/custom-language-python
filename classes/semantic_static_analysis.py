@@ -86,6 +86,17 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
         self.visit(node.value)
 
     def visit_block(self, node: Block) -> None:
+        """
+        TODO: prvotna myslienka: ked je tato metoda zavolana deklaraciou funkcie tak block by nemal vytvarat novy scope
+        lebo scope sa zavola uz pocas volania Parametrov.
+
+        Druha myslienka: dat parametre a vsetky statementy do blocku cize
+        Block uzol bude obsahovat parametre na indexe 0 a potom zvysok su dalsie statementy
+        :param node:
+        :return:
+        """
+
+
         scope = self.__create_program_scope()
         self.__add_new_scope(scope)
         for statement in node.statements:

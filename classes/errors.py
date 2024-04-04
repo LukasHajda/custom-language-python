@@ -24,11 +24,16 @@ class InvalidOperandsForOperation(GeneralException):
         super().__init__(message)
 
 
-class UndeclaredVariable(GeneralException):
+class NameErrorException(GeneralException):
     def __init__(self, message: str = None):
         super().__init__(message)
 
 
 class DuplicateVariableDeclaration(GeneralException):
+    def __init__(self, message: str = None):
+        super().__init__(message)
+
+
+class TypeErrorException(GeneralException):
     def __init__(self, message: str = None):
         super().__init__(message)

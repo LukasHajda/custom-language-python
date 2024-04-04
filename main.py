@@ -17,21 +17,20 @@ if __name__ == '__main__':
     # while token.token_variant != TokenVariant.T_EOF:
     #     print(token)
     #     token = scanner.next_token()
-    #
+    # #
     parser: Parser = Parser(scanner)
     root: Program = parser.parse()
-    # # #
-    visualizer = Visualizer(root)
-    visualizer.visualize_tree()
+    # # # #
+    # visualizer = Visualizer(root)
+    # visualizer.visualize_tree()
     #
     #
-    # # TODO: 14.3.2024 si si uvedomil ze Visitor pattern robi postorder prechod.
     #
-    # semantic_analyzer = SemanticAnalyzer(root)
-    # semantic_analyzer.check()
-    #
-    # interpreter = Interpreter(root)
-    # interpreter.start_evaluation()
+    semantic_analyzer = SemanticAnalyzer(root)
+    semantic_analyzer.check()
+    # #
+    interpreter = Interpreter(root)
+    interpreter.start_evaluation()
 
 
 

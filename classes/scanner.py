@@ -10,10 +10,10 @@ RESERVED_WORDS: dict = {
     'tak': TokenVariant.T_THEN, 'pokial': TokenVariant.T_WHILE,
     'nepravda': TokenVariant.T_BOOLEAN, 'pravda': TokenVariant.T_BOOLEAN,
     'prirad': TokenVariant.T_ASSIGN, 'do': TokenVariant.T_TO,
-    'null': TokenVariant.T_NULL,
-    'print': TokenVariant.T_PRINT,
+    'nic': TokenVariant.T_NULL,
+    'ukaz': TokenVariant.T_PRINT,
     'funkcia': TokenVariant.T_FUNCTION,
-    'vrat': TokenVariant.T_RETURN
+    'vrat': TokenVariant.T_RETURN,
 }
 
 TOKENS: dict = {

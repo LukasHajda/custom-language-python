@@ -1,25 +1,32 @@
 from classes.node_visitor import VisitorInterpreter
 from classes.nodes import *
+from classes.evaluation_record import EvaluationRecord
 
 
 class Interpreter(VisitorInterpreter):
     def __init__(self, root: Program):
         self.root: Program = root
-        self.variables = {}
+        self.evaluation_stack: deque = deque()
+        self.current_evaluation: Optional[EvaluationRecord] = None
 
     def __str__(self):
         pass
 
     def evaluate_program(self, node: Program) -> None:
+        evaluation_record = EvaluationRecord('PROGRAM')
+        self.evaluation_stack.append(evaluation_record)
+        self.current_evaluation = evaluation_record
         self.evaluate(node.block)
 
+        self.evaluation_stack.pop()
+
     def evaluate_assignment_statement(self, node: AssignmentStatement) -> None:
-        self.variables[node.name.value] = self.evaluate(node.value)
+        self.current_evaluation.set_variable(node.name.value, self.evaluate(node.value))
 
     def evaluate_variable(self, node: Variable) -> bool:
-        return self.variables[node.value]
+        return self.current_evaluation.get_variable(node.value)
 
-    def evaluate_literal(self, node: Literal) -> None:
+    def evaluate_literal(self, node: Literal) -> Any:
         return node.value
 
     def evaluate_if_statement(self, node: IfStatement) -> None:
@@ -77,12 +84,39 @@ class Interpreter(VisitorInterpreter):
         result = self.evaluate(node.value)
         print(result)
 
-    def evaluate_condition(self, node: Condition) -> None:
+    def evaluate_condition(self, node: Condition) -> Any:
         return self.evaluate(node.value)
+
+    def evaluate_parameter_list(self, node: ParameterList) -> None:
+        pass
 
     def evaluate_block(self, node: Block) -> None:
         for statement in node.statements:
             self.evaluate(statement)
+
+    def evaluate_function_declaration(self, node: FunctionDeclaration) -> None:
+        pass
+
+    def evaluate_argument(self, node: Argument) -> Any:
+        return self.evaluate(node.value)
+
+    def evaluate_function_call(self, node: FunctionCall) -> None:
+        parameters = node.parameter_list.parameters
+        arguments = node.argument_list.arguments
+
+        evaluation_record = EvaluationRecord(f"FUNKCIA {node.name}")
+
+        for parameter, argument in zip(parameters, arguments):
+            value = self.evaluate(argument)
+            evaluation_record.set_variable(parameter.value, value)
+
+        self.evaluation_stack.append(evaluation_record)
+        self.current_evaluation = evaluation_record
+
+        self.evaluate(node.block)
+
+        self.evaluation_stack.pop()
+        self.current_evaluation = self.evaluation_stack[-1]
 
     def start_evaluation(self) -> None:
         self.evaluate(self.root)

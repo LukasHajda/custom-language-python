@@ -1,7 +1,7 @@
 from classes.nodes import *
 from classes.node_visitor import VisitorSemanticAnalyzer
 from classes.scope import Scope
-from classes.errors import UndeclaredVariable
+from classes.errors import NameErrorException, TypeErrorException
 
 
 class SemanticAnalyzer(VisitorSemanticAnalyzer):
@@ -11,7 +11,7 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
         self.scope_stack: deque = deque()
         self.current_scope: Optional[Scope] = None
 
-    def __create_program_scope(self) -> Scope:
+    def __create_scope(self) -> Scope:
         self.scope_level += 1
         return Scope(
             level = self.scope_level,
@@ -28,13 +28,23 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
         self.scope_stack.pop()
         self.current_scope = self.scope_stack[-1]
 
-    def __check_variable_in_scopes(self, variable: str) -> bool:
+    def __check_variable_in_scopes(self, variable: str) -> Optional[Variable]:
         for index in range(len(self.scope_stack) - 1, -1, -1):
             scope = self.scope_stack[index]
 
-            if scope.lookup(variable):
-                return True
-        return False
+            checked_variable = scope.lookup_variable(variable)
+            if checked_variable:
+                return checked_variable
+        return None
+
+    def __check_functions_in_scopes(self, function: str) -> Optional[FunctionDeclaration]:
+        for index in range(len(self.scope_stack) - 1, -1, -1):
+            scope = self.scope_stack[index]
+
+            checked_function = scope.lookup_function(function)
+            if checked_function:
+                return checked_function
+        return None
 
     def visit_program(self, node: Program) -> None:
         self.visit(node.block)
@@ -42,6 +52,47 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
     def visit_print_statement(self, node: PrintStatement) -> None:
         self.visit(node.value)
 
+    def visit_function_declaration(self, node: FunctionDeclaration) -> None:
+        if not self.__check_functions_in_scopes(node.name):
+            self.current_scope.add_function(node)
+
+        self.visit(node.block)
+
+    def visit_parameter_list(self, node: ParameterList) -> None:
+        for parameter in node.parameters:
+            if not self.__check_variable_in_scopes(parameter.value):
+                self.current_scope.add_variable(parameter)
+
+    def visit_function_call(self, node: FunctionCall) -> None:
+        defined_function = self.__check_functions_in_scopes(node.name)
+
+        if not defined_function:
+            raise NameErrorException(
+                message = "Name: '{variable}' is not defined".format(
+                    variable = node.name,
+                )
+            )
+
+        if len(defined_function.parameter_list.parameters) != len(node.argument_list.arguments):
+            raise TypeErrorException(
+                message = "{function_name}() takes {parameters} parameters but {actual} were given".format(
+                    function_name = defined_function.name,
+                    parameters = len(defined_function.parameter_list.parameters),
+                    actual = len(node.argument_list.arguments)
+                )
+            )
+
+        for argument in node.argument_list.arguments:
+            self.visit(argument)
+
+        node.block = defined_function.block
+        node.parameter_list = defined_function.parameter_list
+
+    def visit_argument(self, node: Argument) -> None:
+        self.visit(node.value)
+
+
+    # TODO: Mozno ti to padne na do x1 prirad x1.
     def visit_assignment_statement(self, node: AssignmentStatement) -> None:
         if not self.__check_variable_in_scopes(node.name.value):
             self.current_scope.add_variable(node.name)
@@ -50,7 +101,7 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
     def visit_variable(self, node: Variable) -> bool:
         if self.__check_variable_in_scopes(node.value):
             return True
-        raise UndeclaredVariable(
+        raise NameErrorException(
             message = "Undeclared variable: '{variable}' at line {row} and column {column}".format(
                 variable = node.value,
                 row = node.row,
@@ -96,8 +147,7 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
         :return:
         """
 
-
-        scope = self.__create_program_scope()
+        scope = self.__create_scope()
         self.__add_new_scope(scope)
         for statement in node.statements:
             self.visit(statement)
@@ -106,6 +156,6 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
     def check(self) -> None:
         try:
             self.visit(self.root)
-        except UndeclaredVariable as exception:
+        except (NameErrorException, TypeErrorException) as exception:
             print(exception)
             exit(0)

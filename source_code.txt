@@ -1,7 +1,12 @@
-funkcia foo(xg, ty, gy) {
- ak (pravda) tak {
-    boo(5).
- }
-
- vrat xf.
+funkcia goo(a1) {
+    ukaz(a1).
 }
+
+
+do premenna1 prirad 1.
+
+pokial (premenna1 < 10) tak {
+    goo(premenna1).
+    do premenna1 prirad (premenna1 + 1).
+}
+

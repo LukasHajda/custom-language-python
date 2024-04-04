@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class TokenVariant(Enum):
-    T_PRINT = ('print', 'print')
+    T_PRINT = ('print', 'ukaz')
     T_FUNCTION = ('function', 'funkcia')
     T_RETURN = ('return', 'vrat')
     T_COLON = ('colon', ',')

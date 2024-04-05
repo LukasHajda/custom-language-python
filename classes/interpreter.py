@@ -7,11 +7,26 @@ from classes.errors import Return
 class Interpreter(VisitorInterpreter):
     def __init__(self, root: Program):
         self.root: Program = root
-        self.evaluation_stack: deque = deque()
+        self.evaluation_stack: deque[EvaluationRecord] = deque()
         self.current_evaluation: Optional[EvaluationRecord] = None
 
-    def __str__(self):
-        pass
+    def __check_variable_in_stack(self, variable: str) -> Optional[Variable]:
+        for index in range(len(self.evaluation_stack) - 1, -1, -1):
+            evaluation_record = self.evaluation_stack[index]
+
+            checked_variable = evaluation_record.get_variable(variable)
+            if checked_variable:
+                return checked_variable
+        return None
+
+    def __check_function_in_stack(self, function: str) -> Optional[Any]:
+        for index in range(len(self.evaluation_stack) - 1, -1, -1):
+            evaluation_record = self.evaluation_stack[index]
+
+            checked_function = evaluation_record.get_function(function)
+            if checked_function:
+                return checked_function
+        return None
 
     def evaluate_program(self, node: Program) -> None:
         evaluation_record = EvaluationRecord('PROGRAM')
@@ -24,8 +39,8 @@ class Interpreter(VisitorInterpreter):
     def evaluate_assignment_statement(self, node: AssignmentStatement) -> None:
         self.current_evaluation.set_variable(node.name.value, self.evaluate(node.value))
 
-    def evaluate_variable(self, node: Variable) -> bool:
-        return self.current_evaluation.get_variable(node.value)
+    def evaluate_variable(self, node: Variable) -> Variable:
+        return self.__check_variable_in_stack(node.value)
 
     def evaluate_literal(self, node: Literal) -> Any:
         return node.value
@@ -127,7 +142,6 @@ class Interpreter(VisitorInterpreter):
         self.current_evaluation = self.evaluation_stack[-1]
 
         return value
-
 
     def start_evaluation(self) -> None:
         self.evaluate(self.root)

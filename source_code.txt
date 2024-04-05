@@ -1,17 +1,11 @@
-funkcia foo() {
-    vrat 10.
-}
-
-funkcia goo() {
-    vrat 5.
-}
-
-funkcia boo() {
-    vrat 6.
+funkcia prveSlovo() {
+    vrat "hello".
 }
 
 
-do prem prirad foo() + goo() + boo().
+funkcia druheSlovo() {
+    vrat "world" + prveSlovo().
+}
 
-ukaz(prem).
 
+ukaz(prveSlovo() + " " + druheSlovo()).

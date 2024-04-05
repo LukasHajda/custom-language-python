@@ -11,7 +11,7 @@ class EvaluationRecord:
         return self.functions[function_name]
 
     def get_variable(self, variable_name: str) -> Any:
-        return self.variables[variable_name]
+        return self.variables.get(variable_name, None)
 
     def set_function(self, key: str, value: Any) -> None:
         self.functions[key] = value

@@ -17,7 +17,7 @@ while_loop      =  "pokial" "(" condition ")" "tak" block;
 
 function_decl   =  "funkcia" "(" parameter_list ")" block
 
-return_statement =  "vrat" expression "."
+return_statement =  "vrat" {expression} "."
 
 parameter_list      = { identifier { "," identifier } }
 argument_list       = { expression { "," expression } }

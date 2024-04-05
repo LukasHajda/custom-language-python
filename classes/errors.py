@@ -1,3 +1,6 @@
+from classes.nodes import ASTnode
+
+
 class GeneralException(Exception):
     def __init__(self, message: str = None):
         self.message: str = f'{self.__class__.__name__}: {message}'
@@ -37,3 +40,9 @@ class DuplicateVariableDeclaration(GeneralException):
 class TypeErrorException(GeneralException):
     def __init__(self, message: str = None):
         super().__init__(message)
+
+
+class Return(Exception):
+    def __init__(self, value: ASTnode):
+        super().__init__()
+        self.value = value

@@ -1,12 +1,17 @@
-funkcia goo(a1) {
-    ukaz(a1).
+funkcia foo() {
+    vrat 10.
+}
+
+funkcia goo() {
+    vrat 5.
+}
+
+funkcia boo() {
+    vrat 6.
 }
 
 
-do premenna1 prirad 1.
+do prem prirad foo() + goo() + boo().
 
-pokial (premenna1 < 10) tak {
-    goo(premenna1).
-    do premenna1 prirad (premenna1 + 1).
-}
+ukaz(prem).
 

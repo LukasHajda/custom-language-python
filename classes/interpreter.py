@@ -1,6 +1,7 @@
 from classes.node_visitor import VisitorInterpreter
 from classes.nodes import *
 from classes.evaluation_record import EvaluationRecord
+from classes.errors import Return
 
 
 class Interpreter(VisitorInterpreter):
@@ -90,6 +91,10 @@ class Interpreter(VisitorInterpreter):
     def evaluate_parameter_list(self, node: ParameterList) -> None:
         pass
 
+    def evaluate_return_statement(self, node: ReturnStatement) -> None:
+        value = self.evaluate(node.value)
+        raise Return(value)
+
     def evaluate_block(self, node: Block) -> None:
         for statement in node.statements:
             self.evaluate(statement)
@@ -113,10 +118,16 @@ class Interpreter(VisitorInterpreter):
         self.evaluation_stack.append(evaluation_record)
         self.current_evaluation = evaluation_record
 
-        self.evaluate(node.block)
+        try:
+            value = self.evaluate(node.block)
+        except (Return, ) as exception:
+            value = exception.value
 
         self.evaluation_stack.pop()
         self.current_evaluation = self.evaluation_stack[-1]
+
+        return value
+
 
     def start_evaluation(self) -> None:
         self.evaluate(self.root)

@@ -95,17 +95,14 @@ class Parser:
             column = current_token.column
         )
 
-
     def __create_null_literal(self) -> ASTnode:
         node = Literal(
             token_variant = TokenVariant.T_NULL,
             value = None
         )
-
-        self.__eat(TokenVariant.T_NULL)
         return node
 
-    def __parse_factor(self) -> ASTnode:
+    def __parse_factor(self) -> Optional[ASTnode]:
         match self.current_token.token_variant:
             case TokenVariant.T_INTEGER:
                 return self.__create_integer_literal_node()
@@ -126,6 +123,8 @@ class Parser:
                 node = self.__parse_expression()
                 self.__eat(TokenVariant.T_RIGHT_P)
                 return node
+            case TokenVariant.T_DOT:
+                return None
             case _:
                 node = self.__parse_identifier()
                 return node
@@ -327,10 +326,17 @@ class Parser:
         return_statement = ReturnStatement()
         return_statement.value = self.__parse_expression()
 
+        if return_statement.value is None:
+            return_statement.value = Literal(
+                token_variant = TokenVariant.T_NULL,
+                value = None
+            )
+
         self.__eat(TokenVariant.T_DOT)
 
         return return_statement
 
+    # TODO: Return je iba vo funkcii. Uprav gramatiku ale aj toto parsovanie
     def __parser_function_call(self) -> ASTnode:
         function_call = FunctionCall()
 
@@ -383,11 +389,14 @@ class Parser:
 
         return block
 
+
+    # TODO: vrat nic. robi problem.
     def parse(self) -> Program:
-        try:
-            return self.__parse_program()
-        except (UnexpectedTokenException, ) as exception:
-            print(exception)
-            exit(0)
+        return self.__parse_program()
+        # try:
+        #     pass
+        # except (UnexpectedTokenException, ) as exception:
+        #     print(exception)
+        #     exit(0)
 
 

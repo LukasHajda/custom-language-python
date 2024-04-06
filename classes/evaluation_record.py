@@ -2,10 +2,12 @@ from typing import Any
 
 
 class EvaluationRecord:
-    def __init__(self, name: str):
+    def __init__(self):
         self.variables: dict = {}
         self.functions: dict = {}
-        self.name = name
+
+    def __str__(self):
+        return f"{self.variables}"
 
     def get_function(self, function_name: str) -> Any:
         return self.functions[function_name]

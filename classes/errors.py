@@ -22,11 +22,6 @@ class UnexpectedTokenException(GeneralException):
         super().__init__(message)
 
 
-class InvalidOperandsForOperation(GeneralException):
-    def __init__(self, message: str = None):
-        super().__init__(message)
-
-
 class NameErrorException(GeneralException):
     def __init__(self, message: str = None):
         super().__init__(message)
@@ -38,6 +33,11 @@ class DuplicateVariableDeclaration(GeneralException):
 
 
 class TypeErrorException(GeneralException):
+    def __init__(self, message: str = None):
+        super().__init__(message)
+
+
+class SyntaxErrorException(GeneralException):
     def __init__(self, message: str = None):
         super().__init__(message)
 

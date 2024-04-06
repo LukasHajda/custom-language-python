@@ -1,11 +1,11 @@
-funkcia prveSlovo() {
-    vrat "hello".
+funkcia foo() {
+    ukaz(10).
 }
 
 
-funkcia druheSlovo() {
-    vrat "world" + prveSlovo().
+funkcia foo() {
+    ukaz(5).
 }
 
 
-ukaz(prveSlovo() + " " + druheSlovo()).
+foo().

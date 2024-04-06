@@ -1,6 +1,6 @@
 from classes.scanner import Scanner
 from classes.token import Token
-from classes.errors import UnexpectedTokenException
+from classes.errors import UnexpectedTokenException, SyntaxErrorException
 from classes.nodes import *
 from typing import Optional
 
@@ -13,7 +13,7 @@ class Parser:
     def __eat(self, expected_token: TokenVariant) -> None:
         if self.current_token.token_variant != expected_token:
             raise UnexpectedTokenException(
-                message = "Expected token: '{expected}' but '{given}' was given at row {row} and column {column}".format(
+                message = "Očakávaný token: '{expected}' ale '{given}' bol spracovaný na riadku {row} a stĺpci {column}".format(
                     expected = expected_token.value[1],
                     given = self.current_token.token_variant.value[1],
                     row = self.current_token.row,
@@ -100,6 +100,8 @@ class Parser:
             token_variant = TokenVariant.T_NULL,
             value = None
         )
+
+        self.__eat(TokenVariant.T_NULL)
         return node
 
     def __parse_factor(self) -> Optional[ASTnode]:
@@ -312,7 +314,7 @@ class Parser:
         parameter_list = self.__parse_parameters()
 
         self.__eat(TokenVariant.T_LEFT_CURLY_P)
-        function.block = self.__parse_statements(until_curly_p = True)
+        function.block = self.__parse_statements(until_curly_p = True, contain_return = True)
         function.block.statements.appendleft(parameter_list)
         function.parameter_list = parameter_list
 
@@ -336,7 +338,6 @@ class Parser:
 
         return return_statement
 
-    # TODO: Return je iba vo funkcii. Uprav gramatiku ale aj toto parsovanie
     def __parser_function_call(self) -> ASTnode:
         function_call = FunctionCall()
 
@@ -348,9 +349,7 @@ class Parser:
 
         return function_call
 
-
-    # TODO: Mozno skusit potom urobit samostatny block.
-    def __parse_statements(self, until_curly_p: bool = False) -> ASTnode:
+    def __parse_statements(self, until_curly_p: bool = False, contain_return: bool = False) -> ASTnode:
         block = Block()
         while self.current_token.token_variant not in (
                 TokenVariant.T_EOF,
@@ -380,17 +379,19 @@ class Parser:
                     function_declaration = self.__parse_function_declaration()
                     block.statements.append(function_declaration)
                 case TokenVariant.T_RETURN:
+                    if not contain_return:
+                        raise SyntaxErrorException(
+                            message = "'vrat' je mimo funkcie"
+                        )
                     statement = self.__parser_return_statement()
                     block.statements.append(statement)
                 case _:
                     raise UnexpectedTokenException(
-                        message = f"Unexpected Token: {self.current_token}"
+                        message = f"Neočakavaný token: {self.current_token}"
                     )
 
         return block
 
-
-    # TODO: vrat nic. robi problem.
     def parse(self) -> Program:
         return self.__parse_program()
         # try:

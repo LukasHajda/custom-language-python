@@ -2,9 +2,10 @@ from classes.node_visitor import VisitorInterpreter
 from classes.nodes import *
 from classes.evaluation_record import EvaluationRecord
 from classes.errors import Return
+from classes.semantic_dynamic_analysis import DynamicSemanticAnalyzer
 
 
-class Interpreter(VisitorInterpreter):
+class Interpreter(VisitorInterpreter, DynamicSemanticAnalyzer):
     def __init__(self, root: Program):
         self.root: Program = root
         self.evaluation_stack: deque[EvaluationRecord] = deque()
@@ -15,7 +16,7 @@ class Interpreter(VisitorInterpreter):
             evaluation_record = self.evaluation_stack[index]
 
             checked_variable = evaluation_record.get_variable(variable)
-            if checked_variable:
+            if checked_variable is not None:
                 return checked_variable
         return None
 
@@ -24,12 +25,12 @@ class Interpreter(VisitorInterpreter):
             evaluation_record = self.evaluation_stack[index]
 
             checked_function = evaluation_record.get_function(function)
-            if checked_function:
+            if checked_function is not None:
                 return checked_function
         return None
 
     def evaluate_program(self, node: Program) -> None:
-        evaluation_record = EvaluationRecord('PROGRAM')
+        evaluation_record = EvaluationRecord()
         self.evaluation_stack.append(evaluation_record)
         self.current_evaluation = evaluation_record
         self.evaluate(node.block)
@@ -37,13 +38,14 @@ class Interpreter(VisitorInterpreter):
         self.evaluation_stack.pop()
 
     def evaluate_assignment_statement(self, node: AssignmentStatement) -> None:
-        self.current_evaluation.set_variable(node.name.value, self.evaluate(node.value))
+        result = self.evaluate(node.value)
+        self.current_evaluation.set_variable(node.name.value, result)
 
     def evaluate_variable(self, node: Variable) -> Variable:
         return self.__check_variable_in_stack(node.value)
 
     def evaluate_literal(self, node: Literal) -> Any:
-        return node.value
+        return node.value[1: -1] if isinstance(node.value, str) else node.value
 
     def evaluate_if_statement(self, node: IfStatement) -> None:
         condition = self.evaluate(node.condition)
@@ -56,39 +58,15 @@ class Interpreter(VisitorInterpreter):
     def evaluate_else_statement(self, node: ElseStatement) -> None:
         self.evaluate(node.block)
 
-    def evaluate_binary_operation(self, node: BinaryOperation):
-        match node.operator:
-            case TokenVariant.T_PLUS:
-                return self.evaluate(node.left_operand) + self.evaluate(node.right_operand)
-            case TokenVariant.T_MINUS:
-                return self.evaluate(node.left_operand) - self.evaluate(node.right_operand)
-            case TokenVariant.T_MULTIPLICATION:
-                return self.evaluate(node.left_operand) * self.evaluate(node.right_operand)
-            case TokenVariant.T_DIVISION:
-                return self.evaluate(node.left_operand) / self.evaluate(node.right_operand)
-            case TokenVariant.T_DIV:
-                return self.evaluate(node.left_operand) // self.evaluate(node.right_operand)
-            case TokenVariant.T_MODULO:
-                return self.evaluate(node.left_operand) % self.evaluate(node.right_operand)
-            case TokenVariant.T_LESS:
-                return self.evaluate(node.left_operand) < self.evaluate(node.right_operand)
-            case TokenVariant.T_LESS_EQUAL:
-                return self.evaluate(node.left_operand) <= self.evaluate(node.right_operand)
-            case TokenVariant.T_GREATER:
-                return self.evaluate(node.left_operand) > self.evaluate(node.right_operand)
-            case TokenVariant.T_GREATER_EQUAL:
-                return self.evaluate(node.left_operand) >= self.evaluate(node.right_operand)
-            case TokenVariant.T_EQUAL:
-                return self.evaluate(node.left_operand) == self.evaluate(node.right_operand)
-            case TokenVariant.T_NOT_EQUAL:
-                return self.evaluate(node.left_operand) != self.evaluate(node.right_operand)
+    def evaluate_binary_operation(self, node: BinaryOperation) -> Any:
+        left = self.evaluate(node.left_operand)
+        right = self.evaluate(node.right_operand)
+        result = self.check_and_evaluate(left = left, right = right, operator = node.operator)
+        return result
 
     def evaluate_unary_operation(self, node: UnaryOperation) -> None:
-        match node.operator:
-            case TokenVariant.T_PLUS:
-                return +self.evaluate(node.operand)
-            case TokenVariant.T_MINUS:
-                return -self.evaluate(node.operand)
+        operand = self.evaluate(node.operand)
+        return self.check_and_evaluate(right = operand, operator = node.operator)
 
     def evaluate_while_statement(self, node: WhileStatement) -> None:
         condition = self.evaluate(node.condition)
@@ -98,6 +76,11 @@ class Interpreter(VisitorInterpreter):
 
     def evaluate_print_statement(self, node: PrintStatement) -> None:
         result = self.evaluate(node.value)
+        result = "nic" if result is None else result
+        if result is True:
+            result = 'pravda'
+        if result is False:
+            result = 'nepravda'
         print(result)
 
     def evaluate_condition(self, node: Condition) -> Any:
@@ -124,7 +107,7 @@ class Interpreter(VisitorInterpreter):
         parameters = node.parameter_list.parameters
         arguments = node.argument_list.arguments
 
-        evaluation_record = EvaluationRecord(f"FUNKCIA {node.name}")
+        evaluation_record = EvaluationRecord()
 
         for parameter, argument in zip(parameters, arguments):
             value = self.evaluate(argument)

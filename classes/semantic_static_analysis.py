@@ -91,8 +91,6 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
     def visit_argument(self, node: Argument) -> None:
         self.visit(node.value)
 
-
-    # TODO: Mozno ti to padne na do x1 prirad x1.
     def visit_assignment_statement(self, node: AssignmentStatement) -> None:
         if not self.__check_variable_in_scopes(node.name.value):
             self.current_scope.add_variable(node.name)

@@ -16,13 +16,15 @@ if_statement    =  "ak" "(" condition ")" "tak" block [ "inac" block ];
 while_loop      =  "pokial" "(" condition ")" "tak" block;
 
 function_decl   =  "funkcia" "(" parameter_list ")" block
+parameter_list      = { identifier { "," identifier } }
+
+function_call   =   identifier "(" argument_list ")"
+argument_list       = { expression { "," expression } }
 
 return_statement =  "vrat" {expression} "."
 
-parameter_list      = { identifier { "," identifier } }
-argument_list       = { expression { "," expression } }
 
-print           = "vypis" "(" expression ")" "."
+print           = "ukaz" "(" expression ")" "."
 
 block           =  "{" statement { statement } "}";
 condition       =  expression { ( "==" | "!=" | ">" | "<" | ">=" | "<=" ) expression };
@@ -35,9 +37,9 @@ factor          =  identifier
                    |  "+" factor
                    |  "(" expression ")"
                    |  literal
-                   |  identifier "(" parameter_list ")";
+                   |  function_call;
 
-identifier      =  ("_" | letter) {(letter | digit)};
+identifier      =  letter {(letter | digit)};
 integer         =  digit {digit};
 float           =  digit {digit} "." digit {digit};
 literal         =  integer | float;

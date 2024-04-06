@@ -10,10 +10,8 @@ RESERVED_WORDS: dict = {
     'tak': TokenVariant.T_THEN, 'pokial': TokenVariant.T_WHILE,
     'nepravda': TokenVariant.T_BOOLEAN, 'pravda': TokenVariant.T_BOOLEAN,
     'prirad': TokenVariant.T_ASSIGN, 'do': TokenVariant.T_TO,
-    'nic': TokenVariant.T_NULL,
-    'ukaz': TokenVariant.T_PRINT,
-    'funkcia': TokenVariant.T_FUNCTION,
-    'vrat': TokenVariant.T_RETURN,
+    'nic': TokenVariant.T_NULL, 'ukaz': TokenVariant.T_PRINT,
+    'funkcia': TokenVariant.T_FUNCTION, 'vrat': TokenVariant.T_RETURN,
 }
 
 TOKENS: dict = {
@@ -207,15 +205,15 @@ class Scanner:
 
     @update_position
     def t_identifier(self, token: LexToken) -> LexToken:
-        r"""[a-zA-Z_][a-zA-Z0-9]+"""
+        r"""[a-zA-Z][a-zA-Z0-9]*"""
         token.type = token.value.lower() if token.value in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value[0]
         return token
 
     def t_error(self, token: LexToken) -> None:
         token.lexer.skip(1)
         raise UnexpectedCharacterException(
-            message = "Lexing Error. Unexpected character: '{token}' at line {row} and column {column}".format(
-                token = token.value[1],
+            message = "Lexikálna chyba. Neočakavaný znak: '{token}' na riadku {row} a stĺpci {column}".format(
+                token = token.value[0],
                 row = self.row,
                 column = self.column
             )

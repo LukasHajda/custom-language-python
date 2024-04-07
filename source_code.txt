@@ -1,11 +1,9 @@
-funkcia foo() {
+funkcia foo(x, y) {
     ukaz(10).
 }
 
 
-funkcia foo() {
-    ukaz(5).
+funkcia foo(x, x) {
+    ukaz(10).
 }
 
-
-foo().

@@ -1,7 +1,7 @@
 from classes.nodes import *
 from classes.node_visitor import VisitorSemanticAnalyzer
 from classes.scope import Scope
-from classes.errors import NameErrorException, TypeErrorException
+from classes.errors import NameErrorException, TypeErrorException, DuplicateParameterException
 
 
 class SemanticAnalyzer(VisitorSemanticAnalyzer):
@@ -53,9 +53,16 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
         self.visit(node.value)
 
     def visit_function_declaration(self, node: FunctionDeclaration) -> None:
-        if not self.__check_functions_in_scopes(node.name):
-            self.current_scope.add_function(node)
+        parameters_name = list(map(lambda param: param.value, node.parameter_list.parameters))
 
+        if len(parameters_name) != len(set(parameters_name)):
+            raise DuplicateParameterException(
+                message = "Duplikovaný názov parametra vo funkcií ({function_name})".format(
+                    function_name = node.name
+                )
+            )
+
+        self.current_scope.add_function(node)
         self.visit(node.block)
 
     def visit_parameter_list(self, node: ParameterList) -> None:
@@ -68,14 +75,14 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
 
         if not defined_function:
             raise NameErrorException(
-                message = "Name: '{variable}' is not defined".format(
-                    variable = node.name,
+                message = "Názov: '{function_name}' nie je definovaná".format(
+                    function_name = node.name,
                 )
             )
 
         if len(defined_function.parameter_list.parameters) != len(node.argument_list.arguments):
             raise TypeErrorException(
-                message = "{function_name}() takes {parameters} parameters but {actual} were given".format(
+                message = "{function_name}() prijíma {parameters} parametrov ale {actual} bolo predaných".format(
                     function_name = defined_function.name,
                     parameters = len(defined_function.parameter_list.parameters),
                     actual = len(node.argument_list.arguments)
@@ -100,7 +107,7 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
         if self.__check_variable_in_scopes(node.value):
             return True
         raise NameErrorException(
-            message = "Undeclared variable: '{variable}' at line {row} and column {column}".format(
+            message = "Nedeklarovaná premenná: '{variable}' v riadku {row} a stĺpci {column}".format(
                 variable = node.value,
                 row = node.row,
                 column = node.column

@@ -27,6 +27,11 @@ class NameErrorException(GeneralException):
         super().__init__(message)
 
 
+class DuplicateParameterException(GeneralException):
+    def __init__(self, message: str = None):
+        super().__init__(message)
+
+
 class DuplicateVariableDeclaration(GeneralException):
     def __init__(self, message: str = None):
         super().__init__(message)

@@ -9,6 +9,7 @@ class Parser:
     def __init__(self, scanner: Scanner):
         self.scanner: Scanner = scanner
         self.current_token: Optional[Token] = self.scanner.next_token()
+        self.in_function: bool = False
 
     def __eat(self, expected_token: TokenVariant) -> None:
         if self.current_token.token_variant != expected_token:
@@ -304,6 +305,7 @@ class Parser:
         return parameter_list
 
     def __parse_function_declaration(self) -> ASTnode:
+        self.in_function = True
         self.__eat(TokenVariant.T_FUNCTION)
 
         function = FunctionDeclaration()
@@ -314,12 +316,13 @@ class Parser:
         parameter_list = self.__parse_parameters()
 
         self.__eat(TokenVariant.T_LEFT_CURLY_P)
-        function.block = self.__parse_statements(until_curly_p = True, contain_return = True)
+        function.block = self.__parse_statements(until_curly_p = True)
         function.block.statements.appendleft(parameter_list)
         function.parameter_list = parameter_list
 
         self.__eat(TokenVariant.T_RIGHT_CURLY_P)
 
+        self.in_function = False
         return function
 
     def __parser_return_statement(self) -> ASTnode:
@@ -349,7 +352,7 @@ class Parser:
 
         return function_call
 
-    def __parse_statements(self, until_curly_p: bool = False, contain_return: bool = False) -> ASTnode:
+    def __parse_statements(self, until_curly_p: bool = False) -> ASTnode:
         block = Block()
         while self.current_token.token_variant not in (
                 TokenVariant.T_EOF,
@@ -379,10 +382,10 @@ class Parser:
                     function_declaration = self.__parse_function_declaration()
                     block.statements.append(function_declaration)
                 case TokenVariant.T_RETURN:
-                    if not contain_return:
-                        raise SyntaxErrorException(
-                            message = "'vrat' je mimo funkcie"
-                        )
+                    # if not self.in_function:
+                    #     raise SyntaxErrorException(
+                    #         message = "'vrat' je mimo funkcie"
+                    #     )
                     statement = self.__parser_return_statement()
                     block.statements.append(statement)
                 case _:

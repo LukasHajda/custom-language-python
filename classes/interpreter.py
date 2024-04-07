@@ -61,12 +61,12 @@ class Interpreter(VisitorInterpreter, DynamicSemanticAnalyzer):
     def evaluate_binary_operation(self, node: BinaryOperation) -> Any:
         left = self.evaluate(node.left_operand)
         right = self.evaluate(node.right_operand)
-        result = self.check_and_evaluate(left = left, right = right, operator = node.operator)
+        result = self.check_and_evaluate_binary_operation(left = left, right = right, operator = node.operator)
         return result
 
     def evaluate_unary_operation(self, node: UnaryOperation) -> None:
         operand = self.evaluate(node.operand)
-        return self.check_and_evaluate(right = operand, operator = node.operator)
+        return self.check_and_evaluate_unary_operation(operand = operand, operator = node.operator)
 
     def evaluate_while_statement(self, node: WhileStatement) -> None:
         condition = self.evaluate(node.condition)

@@ -6,9 +6,6 @@ class EvaluationRecord:
         self.variables: dict = {}
         self.functions: dict = {}
 
-    def __str__(self):
-        return f"{self.variables}"
-
     def get_function(self, function_name: str) -> Any:
         return self.functions[function_name]
 

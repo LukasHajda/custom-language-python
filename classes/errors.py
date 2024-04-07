@@ -50,4 +50,4 @@ class SyntaxErrorException(GeneralException):
 class Return(Exception):
     def __init__(self, value: ASTnode):
         super().__init__()
-        self.value = value
+        self.value: ASTnode = value

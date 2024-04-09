@@ -212,7 +212,7 @@ class Scanner:
     def t_error(self, token: LexToken) -> None:
         token.lexer.skip(1)
         raise UnexpectedCharacterException(
-            message = "Lexikálna chyba. Neočakavaný znak: '{token}' na riadku {row} a stĺpci {column}".format(
+            message = "Neočakavaný znak: '{token}' na riadku {row} a stĺpci {column}".format(
                 token = token.value[0],
                 row = self.row,
                 column = self.column

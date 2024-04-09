@@ -23,9 +23,6 @@ class Scope:
         self.variables.update({variable.value: variable})
 
     def add_function(self, function: FunctionDeclaration) -> None:
-        # if function.name in self.functions:
-        #     return
-
         self.functions.update({function.name: function})
 
     def lookup_variable(self, variable: str) -> Optional[Variable]:

@@ -38,7 +38,7 @@ class DynamicSemanticAnalyzer:
                     return left % right
         except (Exception, ) as _:
             raise TypeErrorException(
-                message = "Nemozte pouzit operator {operator} medzi typmi ({type_1}) a ({type_2})".format(
+                message = "Nemôzte použiť operátor {operator} medzi typmi ({type_1}) a ({type_2})".format(
                     operator = operator.value[1],
                     type_1 = type(left).__name__ if left is not None else 'nic',
                     type_2 = type(right).__name__ if right is not None else 'nic'
@@ -54,7 +54,7 @@ class DynamicSemanticAnalyzer:
                     return -operand
         except (Exception, ) as _:
             raise TypeErrorException(
-                message = "Nemozte pouzit unarny operator {operator} na typ ({type_1})".format(
+                message = "Nemôžte použiť unárny operator {operator} na typ ({type_1})".format(
                     operator = operator.value[1],
                     type_1 = type(operand).__name__ if operand is not None else 'nic',
                 )

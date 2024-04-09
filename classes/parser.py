@@ -382,10 +382,10 @@ class Parser:
                     function_declaration = self.__parse_function_declaration()
                     block.statements.append(function_declaration)
                 case TokenVariant.T_RETURN:
-                    # if not self.in_function:
-                    #     raise SyntaxErrorException(
-                    #         message = "'vrat' je mimo funkcie"
-                    #     )
+                    if not self.in_function:
+                        raise SyntaxErrorException(
+                            message = "'vrat' je mimo funkcie"
+                        )
                     statement = self.__parser_return_statement()
                     block.statements.append(statement)
                 case _:

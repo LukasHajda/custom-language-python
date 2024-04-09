@@ -1,12 +1,19 @@
-funkcia fib(cislo) {
-   ak (cislo <= 1) tak {
-        vrat cislo.
-    } inak {
-        vrat fib(cislo - 2) + fib(cislo - 1).
+funkcia foo() {
+    ak (pravda) tak {
+        ak (pravda) tak {
+        ak (pravda) tak {
+        ak (pravda) tak {
+        ak (pravda) tak {
+        ak (pravda) tak {
+        ak (pravda) tak {
+        vrat 5.
+    }
+    }
+    }
+    }
+    }
+    }
     }
 }
 
-ukaz(fib(5)).
-ukaz(fib(10)).
-ukaz(fib(15)).
-ukaz(fib(20)).
+ukaz(foo()).

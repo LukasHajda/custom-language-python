@@ -17,15 +17,28 @@
 3. Môžete začať písať kód do súboru `source_code.txt`
 
 ---
+**Vizualizácia AST**<br />
+Pri každom spustení programu sa vygeneruje ```AST.pdf``` súbor, ktorý obsahuje AST pre zdrojový kód.
+Ak nechcete generovať tento súbor stačí len zakomentovať tieto riadky v ```main.py```
+```
+visualizer = Visualizer(root)
+visualizer.visualize_tree()
+```
+
+---
 Ako písať kód:
 
 **Priradenie:**
 ```
-do x1 prirad 10.
+do x1 prirad "Ahoj svet".
 
 do x2 prirad 10 + 20.
 
 do x4 prirad foo().
+
+do x5 prirad 67.6.
+
+do x6 prirad pravda.
 ```
 **Podmienky**
 

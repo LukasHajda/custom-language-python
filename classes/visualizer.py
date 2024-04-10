@@ -178,4 +178,4 @@ class Visualizer(graphviz.Digraph, VisitorVisualizer):
 
     def visualize_tree(self) -> None:
         self.__traverse_ast()
-        self.render('AST', format = 'pdf', cleanup = True, view = True)
+        self.render('AST', format = 'pdf', cleanup = True)

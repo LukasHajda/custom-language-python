@@ -1,19 +1,14 @@
-funkcia foo() {
-    ak (pravda) tak {
-        ak (pravda) tak {
-        ak (pravda) tak {
-        ak (pravda) tak {
-        ak (pravda) tak {
-        ak (pravda) tak {
-        ak (pravda) tak {
-        vrat 5.
-    }
-    }
-    }
-    }
-    }
-    }
-    }
+# Sem môžete písať váš kód
+
+funkcia foo(x, y) {
+    vrat x + y.
 }
 
-ukaz(foo()).
+funkcia goo(x, y) {
+    vrat x - y.
+}
+
+do x1 prirad foo(10, 5) + goo(4, 2).
+
+ukaz(x1).
+

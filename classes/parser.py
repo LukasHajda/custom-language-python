@@ -1,6 +1,6 @@
 from classes.scanner import Scanner
 from classes.token import Token
-from classes.errors import UnexpectedTokenException
+from classes.errors import UnexpectedTokenException, SyntaxErrorException
 from classes.nodes import *
 from typing import Optional
 
@@ -9,11 +9,12 @@ class Parser:
     def __init__(self, scanner: Scanner):
         self.scanner: Scanner = scanner
         self.current_token: Optional[Token] = self.scanner.next_token()
+        self.in_function: bool = False
 
     def __eat(self, expected_token: TokenVariant) -> None:
         if self.current_token.token_variant != expected_token:
             raise UnexpectedTokenException(
-                message = "Expected token: '{expected}' but '{given}' was given at row {row} and column {column}".format(
+                message = "Očakávaný token: '{expected}' ale '{given}' bol spracovaný na riadku {row} a stĺpci {column}".format(
                     expected = expected_token.value[1],
                     given = self.current_token.token_variant.value[1],
                     row = self.current_token.row,
@@ -79,7 +80,32 @@ class Parser:
         self.__eat(TokenVariant.T_IDENTIFIER)
         return node
 
-    def __parse_factor(self) -> ASTnode:
+    def __parse_identifier(self) -> ASTnode:
+        current_token = self.current_token
+
+        self.__eat(TokenVariant.T_IDENTIFIER)
+
+        if self.current_token.token_variant == TokenVariant.T_LEFT_P:
+            function_call = self.__parser_function_call()
+            function_call.name = current_token.value
+            return function_call
+
+        return Variable(
+            value = current_token.value,
+            row = current_token.row,
+            column = current_token.column
+        )
+
+    def __create_null_literal(self) -> ASTnode:
+        node = Literal(
+            token_variant = TokenVariant.T_NULL,
+            value = None
+        )
+
+        self.__eat(TokenVariant.T_NULL)
+        return node
+
+    def __parse_factor(self) -> Optional[ASTnode]:
         match self.current_token.token_variant:
             case TokenVariant.T_INTEGER:
                 return self.__create_integer_literal_node()
@@ -87,6 +113,8 @@ class Parser:
                 return self.__create_float_literal_node()
             case TokenVariant.T_STRING:
                 return self.__create_string_literal()
+            case TokenVariant.T_NULL:
+                return self.__create_null_literal()
             case TokenVariant.T_BOOLEAN:
                 return self.__create_boolean_literal_node()
             case TokenVariant.T_MINUS:
@@ -98,8 +126,10 @@ class Parser:
                 node = self.__parse_expression()
                 self.__eat(TokenVariant.T_RIGHT_P)
                 return node
+            case TokenVariant.T_DOT:
+                return None
             case _:
-                node = self.__create_variable()
+                node = self.__parse_identifier()
                 return node
 
     def __parse_term(self) -> ASTnode:
@@ -240,12 +270,17 @@ class Parser:
 
     def __parse_arguments(self) -> ASTnode:
         argument_list = ArgumentList()
+        first_argument = True
 
         while self.current_token.token_variant != TokenVariant.T_RIGHT_P:
+            if not first_argument:
+                self.__eat(TokenVariant.T_COLON)
             argument = Argument()
             argument.value = self.__parse_expression()
 
             argument_list.arguments.append(argument)
+
+            first_argument = False
 
         return argument_list
 
@@ -257,18 +292,20 @@ class Parser:
             if not first_parameter:
                 self.__eat(TokenVariant.T_COLON)
 
-            parameter = Parameter(
-                name = self.current_token.value
+            parameter = Variable(
+                value = self.current_token.value,
+                row = self.current_token.row,
+                column = self.current_token.column
             )
             parameter_list.parameters.append(parameter)
             self.__eat(TokenVariant.T_IDENTIFIER)
             first_parameter = False
-
         self.__eat(TokenVariant.T_RIGHT_P)
 
         return parameter_list
 
     def __parse_function_declaration(self) -> ASTnode:
+        self.in_function = True
         self.__eat(TokenVariant.T_FUNCTION)
 
         function = FunctionDeclaration()
@@ -281,9 +318,11 @@ class Parser:
         self.__eat(TokenVariant.T_LEFT_CURLY_P)
         function.block = self.__parse_statements(until_curly_p = True)
         function.block.statements.appendleft(parameter_list)
+        function.parameter_list = parameter_list
 
         self.__eat(TokenVariant.T_RIGHT_CURLY_P)
 
+        self.in_function = False
         return function
 
     def __parser_return_statement(self) -> ASTnode:
@@ -292,26 +331,27 @@ class Parser:
         return_statement = ReturnStatement()
         return_statement.value = self.__parse_expression()
 
+        if return_statement.value is None:
+            return_statement.value = Literal(
+                token_variant = TokenVariant.T_NULL,
+                value = None
+            )
+
         self.__eat(TokenVariant.T_DOT)
 
         return return_statement
 
     def __parser_function_call(self) -> ASTnode:
         function_call = FunctionCall()
-        function_call.name = self.current_token.value
 
-        self.__eat(TokenVariant.T_IDENTIFIER)
         self.__eat(TokenVariant.T_LEFT_P)
 
         function_call.argument_list = self.__parse_arguments()
 
         self.__eat(TokenVariant.T_RIGHT_P)
-        self.__eat(TokenVariant.T_DOT)
 
         return function_call
 
-
-    # TODO: Mozno skusit potom urobit samostatny block.
     def __parse_statements(self, until_curly_p: bool = False) -> ASTnode:
         block = Block()
         while self.current_token.token_variant not in (
@@ -332,8 +372,9 @@ class Parser:
                     block.statements.append(statement)
                 # Function call
                 case TokenVariant.T_IDENTIFIER:
-                    function_call = self.__parser_function_call()
+                    function_call = self.__parse_identifier()
                     block.statements.append(function_call)
+                    self.__eat(TokenVariant.T_DOT)
                 case TokenVariant.T_PRINT:
                     statement = self.__parse_print()
                     block.statements.append(statement)
@@ -341,20 +382,25 @@ class Parser:
                     function_declaration = self.__parse_function_declaration()
                     block.statements.append(function_declaration)
                 case TokenVariant.T_RETURN:
+                    if not self.in_function:
+                        raise SyntaxErrorException(
+                            message = "'vrat' je mimo funkcie"
+                        )
                     statement = self.__parser_return_statement()
                     block.statements.append(statement)
                 case _:
                     raise UnexpectedTokenException(
-                        message = f"Unexpected Token: {self.current_token}"
+                        message = f"Neočakavaný token: {self.current_token}"
                     )
 
         return block
 
     def parse(self) -> Program:
-        try:
-            return self.__parse_program()
-        except (UnexpectedTokenException, ) as exception:
-            print(exception)
-            exit(0)
+        return self.__parse_program()
+        # try:
+        #     pass
+        # except (UnexpectedTokenException, ) as exception:
+        #     print(exception)
+        #     exit(0)
 
 

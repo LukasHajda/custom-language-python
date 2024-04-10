@@ -1,9 +1,11 @@
-from classes.nodes import Variable
+from classes.nodes import Variable, FunctionDeclaration
+from typing import Optional
 
 
 class Scope:
     def __init__(self, level: int, global_scope: bool = False):
-        self.variables: dict[str, None] = {}
+        self.variables: dict[str, Variable] = {}
+        self.functions: dict[str, FunctionDeclaration] = {}
         self.global_scope: bool = global_scope
         self.level = level
 
@@ -18,8 +20,14 @@ class Scope:
         if variable.value in self.variables:
             return
 
-        self.variables.update({variable.value: None})
+        self.variables.update({variable.value: variable})
 
-    def lookup(self, variable: str) -> bool:
-        return variable in self.variables
+    def add_function(self, function: FunctionDeclaration) -> None:
+        self.functions.update({function.name: function})
+
+    def lookup_variable(self, variable: str) -> Optional[Variable]:
+        return self.variables[variable] if variable in self.variables else None
+
+    def lookup_function(self, function: str) -> Optional[FunctionDeclaration]:
+        return self.functions[function] if function in self.functions else None
 

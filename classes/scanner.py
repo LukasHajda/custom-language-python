@@ -10,10 +10,8 @@ RESERVED_WORDS: dict = {
     'tak': TokenVariant.T_THEN, 'pokial': TokenVariant.T_WHILE,
     'nepravda': TokenVariant.T_BOOLEAN, 'pravda': TokenVariant.T_BOOLEAN,
     'prirad': TokenVariant.T_ASSIGN, 'do': TokenVariant.T_TO,
-    'null': TokenVariant.T_NULL,
-    'print': TokenVariant.T_PRINT,
-    'funkcia': TokenVariant.T_FUNCTION,
-    'vrat': TokenVariant.T_RETURN
+    'nic': TokenVariant.T_NULL, 'ukaz': TokenVariant.T_PRINT,
+    'funkcia': TokenVariant.T_FUNCTION, 'vrat': TokenVariant.T_RETURN,
 }
 
 TOKENS: dict = {
@@ -21,7 +19,7 @@ TOKENS: dict = {
     'division': TokenVariant.T_DIVISION, 'multiplication': TokenVariant.T_MULTIPLICATION,
     'modulo': TokenVariant.T_MODULO, 'div': TokenVariant.T_DIV,
 
-    'less': TokenVariant.T_LESS, 'less_equal': TokenVariant.T_LESS_EQUAL,
+    'less_equal': TokenVariant.T_LESS_EQUAL, 'less': TokenVariant.T_LESS,
     'greater': TokenVariant.T_GREATER, 'greater_equal': TokenVariant.T_GREATER_EQUAL,
     'equal': TokenVariant.T_EQUAL, 'not_equal': TokenVariant.T_NOT_EQUAL,
 
@@ -84,6 +82,16 @@ class Scanner:
             row = self.row,
             column = self.column
         )
+
+    @update_position
+    def t_less_equal(self, token: LexToken) -> LexToken:
+        r"""<="""
+        return token
+
+    @update_position
+    def t_less(self, token: LexToken) -> LexToken:
+        r"""<\s"""
+        return token
 
     @update_position
     def t_ignore_newline(self, token: LexToken) -> None:
@@ -160,23 +168,13 @@ class Scanner:
         return token
 
     @update_position
-    def t_less_equal(self, token: LexToken) -> LexToken:
-        r"""\<\="""
-        return token
-
-    @update_position
     def t_greater_equal(self, token: LexToken) -> LexToken:
         r"""\>\="""
         return token
 
     @update_position
-    def t_less(self, token: LexToken) -> LexToken:
-        r"""\<"""
-        return token
-
-    @update_position
     def t_greater(self, token: LexToken) -> LexToken:
-        r"""\>"""
+        r""">\s"""
         return token
 
     @update_position
@@ -207,15 +205,15 @@ class Scanner:
 
     @update_position
     def t_identifier(self, token: LexToken) -> LexToken:
-        r"""[a-zA-Z_][a-zA-Z0-9]+"""
+        r"""[a-zA-Z][a-zA-Z0-9]*"""
         token.type = token.value.lower() if token.value in RESERVED_WORDS else TokenVariant.T_IDENTIFIER.value[0]
         return token
 
     def t_error(self, token: LexToken) -> None:
         token.lexer.skip(1)
         raise UnexpectedCharacterException(
-            message = "Lexing Error. Unexpected character: '{token}' at line {row} and column {column}".format(
-                token = token.value[1],
+            message = "Neočakavaný znak: '{token}' na riadku {row} a stĺpci {column}".format(
+                token = token.value[0],
                 row = self.row,
                 column = self.column
             )

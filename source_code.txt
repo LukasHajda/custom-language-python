@@ -1,7 +1,2 @@
-funkcia foo(xg, ty, gy) {
- ak (pravda) tak {
-    boo(5).
- }
+# Sem môžete písať váš kód
 
- vrat xf.
-}

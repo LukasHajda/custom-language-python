@@ -87,7 +87,6 @@ class Visualizer(graphviz.Digraph, VisitorVisualizer):
         current_node_name = self.__add_node(node, extra_info = node.name)
         self.edge(parent, current_node_name)
 
-        # self.add(node.parameter_list, parent = current_node_name)
         self.add(node.block, parent = current_node_name)
 
     def add_return_statement(self, node: ReturnStatement, parent: str) -> None:
@@ -179,4 +178,4 @@ class Visualizer(graphviz.Digraph, VisitorVisualizer):
 
     def visualize_tree(self) -> None:
         self.__traverse_ast()
-        self.render('AST', format = 'pdf', cleanup = True, view = True)
+        self.render('AST', format = 'pdf', cleanup = True)

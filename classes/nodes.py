@@ -76,6 +76,7 @@ class FunctionDeclaration(ASTnode):
         self.name: Optional[str] = None
         self.parameter_list: Optional[ParameterList] = None
         self.block: Optional[Block] = None
+        self.return_statement: Optional[ReturnStatement] = None
 
 
 class FunctionCall(ASTnode):
@@ -83,6 +84,9 @@ class FunctionCall(ASTnode):
         super().__init__(NodeVariant.N_FUNCTION_CALL)
         self.name: Optional[str] = None
         self.argument_list: Optional[ArgumentList] = None
+        self.parameter_list: Optional[ParameterList] = None
+        self.block: Optional[Block] = None
+        self.return_statement: Optional[ReturnStatement] = None
 
 
 class AssignmentStatement(ASTnode):

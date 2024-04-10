@@ -9,29 +9,24 @@ from classes.scope import Scope
 
 if __name__ == '__main__':
 
-    #TODO: Prepinace na vizualizaciu
-
+    # Lexical analysis
     scanner: Scanner = Scanner()
 
-    # token = scanner.next_token()
-    # while token.token_variant != TokenVariant.T_EOF:
-    #     print(token)
-    #     token = scanner.next_token()
-    #
+    # Syntax analysis
     parser: Parser = Parser(scanner)
     root: Program = parser.parse()
-    # # #
+
+    # Visualiser
     visualizer = Visualizer(root)
     visualizer.visualize_tree()
-    #
-    #
-    # # TODO: 14.3.2024 si si uvedomil ze Visitor pattern robi postorder prechod.
-    #
-    # semantic_analyzer = SemanticAnalyzer(root)
-    # semantic_analyzer.check()
-    #
-    # interpreter = Interpreter(root)
-    # interpreter.start_evaluation()
+
+    # Semantic analysis
+    semantic_analyzer = SemanticAnalyzer(root)
+    semantic_analyzer.check()
+
+    # Evaluation
+    interpreter = Interpreter(root)
+    interpreter.start_evaluation()
 
 
 

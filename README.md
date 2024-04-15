@@ -14,7 +14,7 @@
 2. Extrahovať si zip súbor
 3. Nastaviť si do `PATH` cestu do priečinku `bin`, ktorá sa nachádza v extrahovanom súbore
 
-![env.png](..%2Fenv.PNG)
+![ScreenShot](..%2Fenv.PNG)
 
 4. Clonuť si projekt:
    - `git clone <link na repozitár>` alebo si projekt stiahnuť ako `zip`

@@ -396,11 +396,10 @@ class Parser:
         return block
 
     def parse(self) -> Program:
-        return self.__parse_program()
-        # try:
-        #     pass
-        # except (UnexpectedTokenException, ) as exception:
-        #     print(exception)
-        #     exit(0)
+        try:
+            return self.__parse_program()
+        except (UnexpectedTokenException, SyntaxErrorException) as exception:
+            print(exception)
+            exit(0)
 
 

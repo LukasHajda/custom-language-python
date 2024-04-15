@@ -12,9 +12,7 @@
 **Ako si spustiť projekt:**
 1. Stiahnuť si package Graphviz [tu](https://gitlab.com/api/v4/projects/4207231/packages/generic/graphviz-releases/10.0.1/windows_10_msbuild_Release_graphviz-10.0.1-win32.zip)
 2. Extrahovať si zip súbor
-3. Nastaviť si do `PATH` cestu do priečinku `bin`, ktorá sa nachádza v extrahovanom súbore
-
-![env](https://github.com/LukasHajda/custom-language-python/assets/41372194/c79e37d5-f4a2-4b4c-bda6-84a333cff18a)
+3. V `main.py` si treba do riadku `2` doplniť cestu ku priečinku `bin` z extrahovaného súboru Graphviz
 
 
 5. Clonuť si projekt:

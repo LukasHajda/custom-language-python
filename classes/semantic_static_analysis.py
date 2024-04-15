@@ -154,6 +154,6 @@ class SemanticAnalyzer(VisitorSemanticAnalyzer):
     def check(self) -> None:
         try:
             self.visit(self.root)
-        except (NameErrorException, TypeErrorException) as exception:
+        except (NameErrorException, TypeErrorException, DuplicateParameterException) as exception:
             print(exception)
             exit(0)

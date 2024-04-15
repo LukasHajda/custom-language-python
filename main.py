@@ -1,10 +1,12 @@
+import os
+os.environ["PATH"] += os.pathsep + '<cesta ku graphviz bin prečinku>'
+# Príklad: os.environ["PATH"] += os.pathsep + 'D:/Program Files (x86)/Graphviz/bin/'
+
 from classes.parser import Parser, Scanner, TokenVariant, Program
 from classes.semantic_static_analysis import SemanticAnalyzer
 from classes.visualizer import Visualizer
 from classes.interpreter import Interpreter
 
-
-from classes.scope import Scope
 
 
 if __name__ == '__main__':

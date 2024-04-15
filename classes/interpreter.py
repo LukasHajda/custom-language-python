@@ -1,7 +1,7 @@
 from classes.node_visitor import VisitorInterpreter
 from classes.nodes import *
 from classes.evaluation_record import EvaluationRecord
-from classes.errors import Return
+from classes.errors import Return, TypeErrorException
 from classes.semantic_dynamic_analysis import DynamicSemanticAnalyzer
 
 
@@ -127,4 +127,8 @@ class Interpreter(VisitorInterpreter, DynamicSemanticAnalyzer):
         return value
 
     def start_evaluation(self) -> None:
-        self.evaluate(self.root)
+        try:
+            self.evaluate(self.root)
+        except (TypeErrorException, ) as exception:
+            print(exception)
+            exit(0)

@@ -14,13 +14,14 @@
 2. Extrahovať si zip súbor
 3. Nastaviť si do `PATH` cestu do priečinku `bin`, ktorá sa nachádza v extrahovanom súbore
 
-![ScreenShot](..%2Fenv.PNG)
+![env](https://github.com/LukasHajda/custom-language-python/assets/41372194/c79e37d5-f4a2-4b4c-bda6-84a333cff18a)
 
-4. Clonuť si projekt:
+
+5. Clonuť si projekt:
    - `git clone <link na repozitár>` alebo si projekt stiahnuť ako `zip`
-5. `pip install -r requirements.txt` (keď potrebujete môžete si vytvoriť `venv`)
+6. `pip install -r requirements.txt` (keď potrebujete môžete si vytvoriť `venv`)
    - Nainštalujú sa potrebné dependencies, ktoré sa v projekte využívajú
-6. Môžete začať písať kód do súboru `source_code.txt`
+7. Môžete začať písať kód do súboru `source_code.txt`
 
 ---
 **Vizualizácia AST**<br />

@@ -15,6 +15,9 @@
 3. V `main.py` si treba do riadku `2` doplniť cestu ku priečinku `bin` z extrahovaného súboru Graphviz
 
 
+![path](https://github.com/LukasHajda/custom-language-python/assets/41372194/94a2a774-76bb-4fbc-bfd0-b8cda3fd2f40)
+
+
 5. Clonuť si projekt:
    - `git clone <link na repozitár>` alebo si projekt stiahnuť ako `zip`
 6. `pip install -r requirements.txt` (keď potrebujete môžete si vytvoriť `venv`)

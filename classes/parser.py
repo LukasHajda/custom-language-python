@@ -370,7 +370,6 @@ class Parser:
                 case TokenVariant.T_WHILE:
                     statement = self.__parse_while()
                     block.statements.append(statement)
-                # Function call
                 case TokenVariant.T_IDENTIFIER:
                     function_call = self.__parse_identifier()
                     block.statements.append(function_call)
